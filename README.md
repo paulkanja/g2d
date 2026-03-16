@@ -37,3 +37,7 @@ g2d is a simple JS 2D game engine I am working on as a hobby. Feel free to use t
     </script>
 </body>
 ```
+
+## Source Code
+
+[GitHub](https://github.com/paulkanja/g2d)
