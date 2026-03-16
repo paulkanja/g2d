@@ -1,6 +1,6 @@
 # g2d
 
-g2d is a simple JS 2D game engine I am working on as a hobby. Feel free to use the project as you wish, although it is far from being production ready.
+[g2d](https://paulkanja.github.io/g2d/) is a simple JS 2D game engine I am working on as a hobby. Feel free to use the project as you wish, although it is far from being production ready.
 
 ## Example
 ```html
