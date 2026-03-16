@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: game.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+    <script>
+    window.addEventListener("load", e => {
+        setTimeout (() => window.scrollBy({top: -150, behaviour: "smooth"}), 150)
+    })
+    </script>
+</head>
+
+<body>
+
+
+<main>
+    <nav>
+        <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="g2d_colors.html">g2d/colors</a></li></ul><h3>Classes</h3><ul><li><a href="Canvas2DRenderer.html">Canvas2DRenderer</a></li><li><a href="Circle.html">Circle</a></li><li><a href="Color.html">Color</a></li><li><a href="Ellipse.html">Ellipse</a></li><li><a href="Game.html">Game</a></li><li><a href="GameNode.html">GameNode</a></li><li><a href="GameObject.html">GameObject</a></li><li><a href="InputManager.html">InputManager</a></li><li><a href="Mat3.html">Mat3</a></li><li><a href="Rect.html">Rect</a></li><li><a href="RenderStyle.html">RenderStyle</a></li><li><a href="Renderer.html">Renderer</a></li><li><a href="Scene.html">Scene</a></li><li><a href="Shape.html">Shape</a></li><li><a href="Transform.html">Transform</a></li><li><a href="Vec2.html">Vec2</a></li><li><a href="Vec3.html">Vec3</a></li></ul><h3>Global</h3><ul><li><a href="global.html#colors">colors</a></li><li><a href="global.html#debug.logNodeTree">debug.logNodeTree</a></li><li><a href="global.html#signal">signal</a></li><li><a href="global.html#signal.any">signal.any</a></li><li><a href="global.html#signal.isSignal">signal.isSignal</a></li><li><a href="global.html#signal.shadow">signal.shadow</a></li></ul>
+    </nav>
+    <div id="main">
+        
+
+        
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import Canvas2DRenderer from "./renderers/canvas2drenderer.js"
+import InputManager     from "./inputmanager.js"
+import Scene            from "./gamenodes/scene.js"
+import signal           from "./signal.js"
+
+/**
+ * Game class
+ * @global
+ * @param {HTMLCanvasElement|HTMLElement} element
+ * 
+ * @property {InputManager} input    - @+const Game input manager
+ * @property {Scene}        scene    - @+readonly Currently active scene
+ * @property {GameScreen}   screen   - @+readonly Game screen
+ * @property {GameViewport} viewport - @+readonly Game renderer viewport
+ * @property {signal}       init     - @+const Init SHADOW signal, triggered when the game first starts
+ * @property {signal}       resize   - @+const Resize signal, triggered when the game resizes
+ * @property {signal}       start    - @+const Start signal, triggered to start the game
+ * @property {signal}       update   - @+const Update SHADOW signal, triggered whenever the game updates
+ */
+class Game {
+    #canvas;
+    #context;
+    #scenes;
+    #currentScene;
+    #renderer;
+    #input;
+    #MAX_DT;
+
+    get input() { return this.#input; }
+
+    get currentScene() { return this.#scenes[this.#currentScene]; }
+
+    get screen() {
+        const canvas = this.#canvas;
+        return new class GameScreen {
+            get width()  { return canvas.width; }
+            get height() { return canvas.height; }
+        }();
+    }
+
+    get viewport() {
+        const renderer = this.#renderer;
+        return new class GameViewport{
+            get width()  { return renderer.width; }
+            get height() { return renderer.height; }
+        }();
+    }
+
+    // FLAGS
+    #autoresize;
+    #initialized;
+    #running;
+
+    // SIGNALS
+    #_update;
+    #init;
+    #start;
+    #resize;
+    #stop;
+    #update;
+
+    get init()   { return this.#init; }
+    get start()  { return this.#start; }
+    get resize() { return this.#resize; }
+    get stop()   { return this.#stop; }
+    get update() { return this.#update; }
+
+    constructor(element) {
+        let canvas;
+
+        this.#autoresize = false;
+        const AUTORESIZE_SYMBOL = Symbol("autoresize");
+        let AUTORESIZE_TIMEOUT = 150;
+        let autoresizeTimeout = null;
+
+        if (!(element instanceof HTMLElement)) {
+            throw new TypeError(
+                `Failed to construct '${this.constructor.name}': ` +
+                `Value is not of type 'HTMLElement'.`
+            );
+        }
+        if (element instanceof HTMLCanvasElement) {
+            canvas = this.#canvas = element;
+        } else {{
+            canvas = this.#canvas = document.createElement("canvas");
+            const rect = element.getBoundingClientRect();
+            canvas.width  = rect.width;
+            canvas.height = rect.height;
+            const resizeObserver = new ResizeObserver(() => {
+                if (autoresizeTimeout) { clearTimeout(autoresizeTimeout); }
+                autoresizeTimeout = setTimeout(() => {
+                    const rect = element.getBoundingClientRect();
+                    this.#resize(rect.width, rect.height, AUTORESIZE_SYMBOL);
+                }, AUTORESIZE_TIMEOUT);
+            });
+            resizeObserver.observe(element);
+            this.#autoresize = true;
+            element.appendChild(canvas);
+        }}
+        canvas.tabIndex = 0;
+        this.#context = canvas.getContext("2d");
+        this.#context.imageSmoothingEnabled = false;
+
+        this.#scenes = [new Scene()];
+        this.#currentScene = 0;
+        this.#input = new InputManager(canvas);
+        this.#renderer = new Canvas2DRenderer(canvas.width, canvas.height);
+        this.#MAX_DT = 1000;
+
+        this.#initialized = false;
+        this.#running     = false;
+
+        const _init   = signal();
+        // const _resize = this.#_resize = signal();
+        const _update = this.#_update = signal();
+        this.#init   = signal.shadow(_init);
+        this.#resize = signal();
+        this.#start  = signal();
+        this.#stop   = signal();
+        this.#update = signal.shadow(_update);
+        this.#resize.connect((width, height, key) => {
+            if (this.#autoresize &amp;&amp; key === AUTORESIZE_SYMBOL) {
+                canvas.width  = width;
+                canvas.height = height;
+                this.#renderer.resizeCanvas(canvas.width, canvas.height);
+                return;
+            }
+            if (!this.#autoresize &amp;&amp; !key) {
+                const rect = element.getBoundingClientRect();
+                canvas.width  = rect.width;
+                canvas.height = rect.height;
+                this.#renderer.resizeCanvas(canvas.width, canvas.height);
+                return;
+            }
+        })
+        this.#start.connect(() => {
+            this.#running = true;
+            if (!this.#initialized) {
+                this.#initialized = true;
+                _init(this);
+                this.#canvas.focus();
+            }
+            window.requestAnimationFrame(t => this.#main(t, 16.6667));
+        });
+        this.#stop.connect(() => {
+            this.#running = false;
+        });
+    }
+
+    #main(t, dt) {
+        if (dt > this.#MAX_DT) { dt = this.#MAX_DT; }
+        this.#_update(dt);
+        this.#render();
+        if (this.#running) {
+            window.requestAnimationFrame(_t => this.#main(_t, _t - t));
+        }
+    }
+
+
+    #render() {
+        this.#canvas.width = this.#canvas.width; // cheeky screen clear
+        const image = this.#renderer.render(this.currentScene);
+        this.#context.drawImage(
+            image, 0, 0, this.#canvas.width, this.#canvas.height
+        );
+    }
+}
+
+export default Game;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+        <footer>
+            Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Mon, 16 Mar 2026 21:59:16 GMT
+        </footer>
+    </div>
+</main>
+
+<br class="clear">
+
+<script>
+{
+    const ovviews = document.querySelectorAll(".container-overview");
+    for (const ov of ovviews) {
+        if (ov.children.length === 1 && !ov.children[0].innerHTML.trim()) {
+            ov.parentNode.removeChild(ov);
+        }
+    }
+}
+
+{
+    let deletions = document.querySelectorAll("article > br:first-child");
+    for (const e of deletions) { e.parentNode.removeChild(e); }
+    deletions = document.querySelectorAll("article > br:first-child");
+    for (const e of deletions) { e.parentNode.removeChild(e); }
+    deletions = document.querySelectorAll("article > hr:first-child");
+    for (const e of deletions) { e.parentNode.removeChild(e); }
+    deletions = document.querySelectorAll("article > hr:last-child");
+    for (const e of deletions) { e.parentNode.removeChild(e); }
+}
+
+prettyPrint();
+</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

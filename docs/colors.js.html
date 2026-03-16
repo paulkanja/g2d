@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: colors.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+    <script>
+    window.addEventListener("load", e => {
+        setTimeout (() => window.scrollBy({top: -150, behaviour: "smooth"}), 150)
+    })
+    </script>
+</head>
+
+<body>
+
+
+<main>
+    <nav>
+        <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="g2d_colors.html">g2d/colors</a></li></ul><h3>Classes</h3><ul><li><a href="Canvas2DRenderer.html">Canvas2DRenderer</a></li><li><a href="Circle.html">Circle</a></li><li><a href="Color.html">Color</a></li><li><a href="Ellipse.html">Ellipse</a></li><li><a href="Game.html">Game</a></li><li><a href="GameNode.html">GameNode</a></li><li><a href="GameObject.html">GameObject</a></li><li><a href="InputManager.html">InputManager</a></li><li><a href="Mat3.html">Mat3</a></li><li><a href="Rect.html">Rect</a></li><li><a href="RenderStyle.html">RenderStyle</a></li><li><a href="Renderer.html">Renderer</a></li><li><a href="Scene.html">Scene</a></li><li><a href="Shape.html">Shape</a></li><li><a href="Transform.html">Transform</a></li><li><a href="Vec2.html">Vec2</a></li><li><a href="Vec3.html">Vec3</a></li></ul><h3>Global</h3><ul><li><a href="global.html#colors">colors</a></li><li><a href="global.html#debug.logNodeTree">debug.logNodeTree</a></li><li><a href="global.html#signal">signal</a></li><li><a href="global.html#signal.any">signal.any</a></li><li><a href="global.html#signal.isSignal">signal.isSignal</a></li><li><a href="global.html#signal.shadow">signal.shadow</a></li></ul>
+    </nav>
+    <div id="main">
+        
+
+        
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import Color from "./color.js";
+
+/**
+ * Named CSS colors implementation
+ * @namespace g2d/colors
+ * @property {Color} TRANSPARENT            - @+getter &lt;tt>#0000&lt;/tt>
+ * @property {Color} ALICEBLUE              - @+getter &lt;tt>&lt;span style="background: #f0f8ff;">&lt;span style="color: white; mix-blend-mode: difference;">#f0f8ff&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} ANTIQUEWHITE           - @+getter &lt;tt>&lt;span style="background: #faebd7;">&lt;span style="color: white; mix-blend-mode: difference;">#faebd7&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} AQUA                   - @+getter &lt;tt>&lt;span style="background: #00ffff;">&lt;span style="color: white; mix-blend-mode: difference;">#00ffff&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} AQUAMARINE             - @+getter &lt;tt>&lt;span style="background: #7fffd4;">&lt;span style="color: white; mix-blend-mode: difference;">#7fffd4&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} AZURE                  - @+getter &lt;tt>&lt;span style="background: #f0ffff;">&lt;span style="color: white; mix-blend-mode: difference;">#f0ffff&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} BEIGE                  - @+getter &lt;tt>&lt;span style="background: #f5f5dc;">&lt;span style="color: white; mix-blend-mode: difference;">#f5f5dc&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} BISQUE                 - @+getter &lt;tt>&lt;span style="background: #ffe4c4;">&lt;span style="color: white; mix-blend-mode: difference;">#ffe4c4&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} BLACK                  - @+getter &lt;tt>&lt;span style="background: #000000;">&lt;span style="color: white; mix-blend-mode: difference;">#000000&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} BLANCHEDALMOND         - @+getter &lt;tt>&lt;span style="background: #ffebcd;">&lt;span style="color: white; mix-blend-mode: difference;">#ffebcd&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} BLUE                   - @+getter &lt;tt>&lt;span style="background: #0000ff;">&lt;span style="color: white; mix-blend-mode: difference;">#0000ff&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} BLUEVIOLET             - @+getter &lt;tt>&lt;span style="background: #8a2be2;">&lt;span style="color: white; mix-blend-mode: difference;">#8a2be2&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} BROWN                  - @+getter &lt;tt>&lt;span style="background: #a52a2a;">&lt;span style="color: white; mix-blend-mode: difference;">#a52a2a&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} BURLYWOOD              - @+getter &lt;tt>&lt;span style="background: #deb887;">&lt;span style="color: white; mix-blend-mode: difference;">#deb887&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} CADETBLUE              - @+getter &lt;tt>&lt;span style="background: #5f9ea0;">&lt;span style="color: white; mix-blend-mode: difference;">#5f9ea0&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} CHARTREUSE             - @+getter &lt;tt>&lt;span style="background: #7fff00;">&lt;span style="color: white; mix-blend-mode: difference;">#7fff00&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} CHOCOLATE              - @+getter &lt;tt>&lt;span style="background: #d2691e;">&lt;span style="color: white; mix-blend-mode: difference;">#d2691e&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} CORAL                  - @+getter &lt;tt>&lt;span style="background: #ff7f50;">&lt;span style="color: white; mix-blend-mode: difference;">#ff7f50&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} CORNFLOWERBLUE         - @+getter &lt;tt>&lt;span style="background: #6495ed;">&lt;span style="color: white; mix-blend-mode: difference;">#6495ed&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} CORNSILK               - @+getter &lt;tt>&lt;span style="background: #fff8dc;">&lt;span style="color: white; mix-blend-mode: difference;">#fff8dc&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} CRIMSON                - @+getter &lt;tt>&lt;span style="background: #dc143c;">&lt;span style="color: white; mix-blend-mode: difference;">#dc143c&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} CYAN                   - @+getter &lt;tt>&lt;span style="background: #00ffff;">&lt;span style="color: white; mix-blend-mode: difference;">#00ffff&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} DARKBLUE               - @+getter &lt;tt>&lt;span style="background: #00008b;">&lt;span style="color: white; mix-blend-mode: difference;">#00008b&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} DARKCYAN               - @+getter &lt;tt>&lt;span style="background: #008b8b;">&lt;span style="color: white; mix-blend-mode: difference;">#008b8b&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} DARKGOLDENROD          - @+getter &lt;tt>&lt;span style="background: #b8860b;">&lt;span style="color: white; mix-blend-mode: difference;">#b8860b&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} DARKGRAY               - @+getter &lt;tt>&lt;span style="background: #a9a9a9;">&lt;span style="color: white; mix-blend-mode: difference;">#a9a9a9&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} DARKGREEN              - @+getter &lt;tt>&lt;span style="background: #006400;">&lt;span style="color: white; mix-blend-mode: difference;">#006400&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} DARKGREY               - @+getter &lt;tt>&lt;span style="background: #a9a9a9;">&lt;span style="color: white; mix-blend-mode: difference;">#a9a9a9&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} DARKKHAKI              - @+getter &lt;tt>&lt;span style="background: #bdb76b;">&lt;span style="color: white; mix-blend-mode: difference;">#bdb76b&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} DARKMAGENTA            - @+getter &lt;tt>&lt;span style="background: #8b008b;">&lt;span style="color: white; mix-blend-mode: difference;">#8b008b&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} DARKOLIVEGREEN         - @+getter &lt;tt>&lt;span style="background: #556b2f;">&lt;span style="color: white; mix-blend-mode: difference;">#556b2f&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} DARKORANGE             - @+getter &lt;tt>&lt;span style="background: #ff8c00;">&lt;span style="color: white; mix-blend-mode: difference;">#ff8c00&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} DARKORCHID             - @+getter &lt;tt>&lt;span style="background: #9932cc;">&lt;span style="color: white; mix-blend-mode: difference;">#9932cc&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} DARKRED                - @+getter &lt;tt>&lt;span style="background: #8b0000;">&lt;span style="color: white; mix-blend-mode: difference;">#8b0000&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} DARKSALMON             - @+getter &lt;tt>&lt;span style="background: #e9967a;">&lt;span style="color: white; mix-blend-mode: difference;">#e9967a&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} DARKSEAGREEN           - @+getter &lt;tt>&lt;span style="background: #8fbc8f;">&lt;span style="color: white; mix-blend-mode: difference;">#8fbc8f&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} DARKSLATEBLUE          - @+getter &lt;tt>&lt;span style="background: #483d8b;">&lt;span style="color: white; mix-blend-mode: difference;">#483d8b&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} DARKSLATEGRAY          - @+getter &lt;tt>&lt;span style="background: #2f4f4f;">&lt;span style="color: white; mix-blend-mode: difference;">#2f4f4f&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} DARKSLATEGREY          - @+getter &lt;tt>&lt;span style="background: #2f4f4f;">&lt;span style="color: white; mix-blend-mode: difference;">#2f4f4f&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} DARKTURQUOISE          - @+getter &lt;tt>&lt;span style="background: #00ced1;">&lt;span style="color: white; mix-blend-mode: difference;">#00ced1&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} DARKVIOLET             - @+getter &lt;tt>&lt;span style="background: #9400d3;">&lt;span style="color: white; mix-blend-mode: difference;">#9400d3&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} DEEPPINK               - @+getter &lt;tt>&lt;span style="background: #ff1493;">&lt;span style="color: white; mix-blend-mode: difference;">#ff1493&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} DEEPSKYBLUE            - @+getter &lt;tt>&lt;span style="background: #00bfff;">&lt;span style="color: white; mix-blend-mode: difference;">#00bfff&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} DIMGRAY                - @+getter &lt;tt>&lt;span style="background: #696969;">&lt;span style="color: white; mix-blend-mode: difference;">#696969&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} DIMGREY                - @+getter &lt;tt>&lt;span style="background: #696969;">&lt;span style="color: white; mix-blend-mode: difference;">#696969&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} DODGERBLUE             - @+getter &lt;tt>&lt;span style="background: #1e90ff;">&lt;span style="color: white; mix-blend-mode: difference;">#1e90ff&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} FIREBRICK              - @+getter &lt;tt>&lt;span style="background: #b22222;">&lt;span style="color: white; mix-blend-mode: difference;">#b22222&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} FLORALWHITE            - @+getter &lt;tt>&lt;span style="background: #fffaf0;">&lt;span style="color: white; mix-blend-mode: difference;">#fffaf0&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} FORESTGREEN            - @+getter &lt;tt>&lt;span style="background: #228b22;">&lt;span style="color: white; mix-blend-mode: difference;">#228b22&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} FUCHSIA                - @+getter &lt;tt>&lt;span style="background: #ff00ff;">&lt;span style="color: white; mix-blend-mode: difference;">#ff00ff&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} GAINSBORO              - @+getter &lt;tt>&lt;span style="background: #dcdcdc;">&lt;span style="color: white; mix-blend-mode: difference;">#dcdcdc&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} GHOSTWHITE             - @+getter &lt;tt>&lt;span style="background: #f8f8ff;">&lt;span style="color: white; mix-blend-mode: difference;">#f8f8ff&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} GOLD                   - @+getter &lt;tt>&lt;span style="background: #ffd700;">&lt;span style="color: white; mix-blend-mode: difference;">#ffd700&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} GOLDENROD              - @+getter &lt;tt>&lt;span style="background: #daa520;">&lt;span style="color: white; mix-blend-mode: difference;">#daa520&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} GRAY                   - @+getter &lt;tt>&lt;span style="background: #808080;">&lt;span style="color: white; mix-blend-mode: difference;">#808080&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} GREEN                  - @+getter &lt;tt>&lt;span style="background: #008000;">&lt;span style="color: white; mix-blend-mode: difference;">#008000&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} GREENYELLOW            - @+getter &lt;tt>&lt;span style="background: #adff2f;">&lt;span style="color: white; mix-blend-mode: difference;">#adff2f&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} GREY                   - @+getter &lt;tt>&lt;span style="background: #808080;">&lt;span style="color: white; mix-blend-mode: difference;">#808080&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} HONEYDEW               - @+getter &lt;tt>&lt;span style="background: #f0fff0;">&lt;span style="color: white; mix-blend-mode: difference;">#f0fff0&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} HOTPINK                - @+getter &lt;tt>&lt;span style="background: #ff69b4;">&lt;span style="color: white; mix-blend-mode: difference;">#ff69b4&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} INDIANRED              - @+getter &lt;tt>&lt;span style="background: #cd5c5c;">&lt;span style="color: white; mix-blend-mode: difference;">#cd5c5c&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} INDIGO                 - @+getter &lt;tt>&lt;span style="background: #4b0082;">&lt;span style="color: white; mix-blend-mode: difference;">#4b0082&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} IVORY                  - @+getter &lt;tt>&lt;span style="background: #fffff0;">&lt;span style="color: white; mix-blend-mode: difference;">#fffff0&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} KHAKI                  - @+getter &lt;tt>&lt;span style="background: #f0e68c;">&lt;span style="color: white; mix-blend-mode: difference;">#f0e68c&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} LAVENDER               - @+getter &lt;tt>&lt;span style="background: #e6e6fa;">&lt;span style="color: white; mix-blend-mode: difference;">#e6e6fa&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} LAVENDERBLUSH          - @+getter &lt;tt>&lt;span style="background: #fff0f5;">&lt;span style="color: white; mix-blend-mode: difference;">#fff0f5&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} LAWNGREEN              - @+getter &lt;tt>&lt;span style="background: #7cfc00;">&lt;span style="color: white; mix-blend-mode: difference;">#7cfc00&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} LEMONCHIFFON           - @+getter &lt;tt>&lt;span style="background: #fffacd;">&lt;span style="color: white; mix-blend-mode: difference;">#fffacd&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} LIGHTBLUE              - @+getter &lt;tt>&lt;span style="background: #add8e6;">&lt;span style="color: white; mix-blend-mode: difference;">#add8e6&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} LIGHTCORAL             - @+getter &lt;tt>&lt;span style="background: #f08080;">&lt;span style="color: white; mix-blend-mode: difference;">#f08080&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} LIGHTCYAN              - @+getter &lt;tt>&lt;span style="background: #e0ffff;">&lt;span style="color: white; mix-blend-mode: difference;">#e0ffff&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} LIGHTGOLDENRODYELLOW   - @+getter &lt;tt>&lt;span style="background: #fafad2;">&lt;span style="color: white; mix-blend-mode: difference;">#fafad2&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} LIGHTGRAY              - @+getter &lt;tt>&lt;span style="background: #d3d3d3;">&lt;span style="color: white; mix-blend-mode: difference;">#d3d3d3&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} LIGHTGREEN             - @+getter &lt;tt>&lt;span style="background: #90ee90;">&lt;span style="color: white; mix-blend-mode: difference;">#90ee90&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} LIGHTGREY              - @+getter &lt;tt>&lt;span style="background: #d3d3d3;">&lt;span style="color: white; mix-blend-mode: difference;">#d3d3d3&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} LIGHTPINK              - @+getter &lt;tt>&lt;span style="background: #ffb6c1;">&lt;span style="color: white; mix-blend-mode: difference;">#ffb6c1&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} LIGHTSALMON            - @+getter &lt;tt>&lt;span style="background: #ffa07a;">&lt;span style="color: white; mix-blend-mode: difference;">#ffa07a&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} LIGHTSEAGREEN          - @+getter &lt;tt>&lt;span style="background: #20b2aa;">&lt;span style="color: white; mix-blend-mode: difference;">#20b2aa&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} LIGHTSKYBLUE           - @+getter &lt;tt>&lt;span style="background: #87cefa;">&lt;span style="color: white; mix-blend-mode: difference;">#87cefa&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} LIGHTSLATEGRAY         - @+getter &lt;tt>&lt;span style="background: #778899;">&lt;span style="color: white; mix-blend-mode: difference;">#778899&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} LIGHTSLATEGREY         - @+getter &lt;tt>&lt;span style="background: #778899;">&lt;span style="color: white; mix-blend-mode: difference;">#778899&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} LIGHTSTEELBLUE         - @+getter &lt;tt>&lt;span style="background: #b0c4de;">&lt;span style="color: white; mix-blend-mode: difference;">#b0c4de&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} LIGHTYELLOW            - @+getter &lt;tt>&lt;span style="background: #ffffe0;">&lt;span style="color: white; mix-blend-mode: difference;">#ffffe0&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} LIME                   - @+getter &lt;tt>&lt;span style="background: #00ff00;">&lt;span style="color: white; mix-blend-mode: difference;">#00ff00&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} LIMEGREEN              - @+getter &lt;tt>&lt;span style="background: #32cd32;">&lt;span style="color: white; mix-blend-mode: difference;">#32cd32&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} LINEN                  - @+getter &lt;tt>&lt;span style="background: #faf0e6;">&lt;span style="color: white; mix-blend-mode: difference;">#faf0e6&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} MAGENTA                - @+getter &lt;tt>&lt;span style="background: #ff00ff;">&lt;span style="color: white; mix-blend-mode: difference;">#ff00ff&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} MAROON                 - @+getter &lt;tt>&lt;span style="background: #800000;">&lt;span style="color: white; mix-blend-mode: difference;">#800000&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} MEDIUMAQUAMARINE       - @+getter &lt;tt>&lt;span style="background: #66cdaa;">&lt;span style="color: white; mix-blend-mode: difference;">#66cdaa&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} MEDIUMBLUE             - @+getter &lt;tt>&lt;span style="background: #0000cd;">&lt;span style="color: white; mix-blend-mode: difference;">#0000cd&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} MEDIUMORCHID           - @+getter &lt;tt>&lt;span style="background: #ba55d3;">&lt;span style="color: white; mix-blend-mode: difference;">#ba55d3&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} MEDIUMPURPLE           - @+getter &lt;tt>&lt;span style="background: #9370db;">&lt;span style="color: white; mix-blend-mode: difference;">#9370db&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} MEDIUMSEAGREEN         - @+getter &lt;tt>&lt;span style="background: #3cb371;">&lt;span style="color: white; mix-blend-mode: difference;">#3cb371&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} MEDIUMSLATEBLUE        - @+getter &lt;tt>&lt;span style="background: #7b68ee;">&lt;span style="color: white; mix-blend-mode: difference;">#7b68ee&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} MEDIUMSPRINGGREEN      - @+getter &lt;tt>&lt;span style="background: #00fa9a;">&lt;span style="color: white; mix-blend-mode: difference;">#00fa9a&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} MEDIUMTURQUOISE        - @+getter &lt;tt>&lt;span style="background: #48d1cc;">&lt;span style="color: white; mix-blend-mode: difference;">#48d1cc&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} MEDIUMVIOLETRED        - @+getter &lt;tt>&lt;span style="background: #c71585;">&lt;span style="color: white; mix-blend-mode: difference;">#c71585&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} MIDNIGHTBLUE           - @+getter &lt;tt>&lt;span style="background: #191970;">&lt;span style="color: white; mix-blend-mode: difference;">#191970&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} MINTCREAM              - @+getter &lt;tt>&lt;span style="background: #f5fffa;">&lt;span style="color: white; mix-blend-mode: difference;">#f5fffa&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} MISTYROSE              - @+getter &lt;tt>&lt;span style="background: #ffe4e1;">&lt;span style="color: white; mix-blend-mode: difference;">#ffe4e1&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} MOCCASIN               - @+getter &lt;tt>&lt;span style="background: #ffe4b5;">&lt;span style="color: white; mix-blend-mode: difference;">#ffe4b5&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} NAVAJOWHITE            - @+getter &lt;tt>&lt;span style="background: #ffdead;">&lt;span style="color: white; mix-blend-mode: difference;">#ffdead&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} NAVY                   - @+getter &lt;tt>&lt;span style="background: #000080;">&lt;span style="color: white; mix-blend-mode: difference;">#000080&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} OLDLACE                - @+getter &lt;tt>&lt;span style="background: #fdf5e6;">&lt;span style="color: white; mix-blend-mode: difference;">#fdf5e6&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} OLIVE                  - @+getter &lt;tt>&lt;span style="background: #808000;">&lt;span style="color: white; mix-blend-mode: difference;">#808000&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} OLIVEDRAB              - @+getter &lt;tt>&lt;span style="background: #6b8e23;">&lt;span style="color: white; mix-blend-mode: difference;">#6b8e23&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} ORANGE                 - @+getter &lt;tt>&lt;span style="background: #ffa500;">&lt;span style="color: white; mix-blend-mode: difference;">#ffa500&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} ORANGERED              - @+getter &lt;tt>&lt;span style="background: #ff4500;">&lt;span style="color: white; mix-blend-mode: difference;">#ff4500&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} ORCHID                 - @+getter &lt;tt>&lt;span style="background: #da70d6;">&lt;span style="color: white; mix-blend-mode: difference;">#da70d6&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} PALEGOLDENROD          - @+getter &lt;tt>&lt;span style="background: #eee8aa;">&lt;span style="color: white; mix-blend-mode: difference;">#eee8aa&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} PALEGREEN              - @+getter &lt;tt>&lt;span style="background: #98fb98;">&lt;span style="color: white; mix-blend-mode: difference;">#98fb98&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} PALETURQUOISE          - @+getter &lt;tt>&lt;span style="background: #afeeee;">&lt;span style="color: white; mix-blend-mode: difference;">#afeeee&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} PALEVIOLETRED          - @+getter &lt;tt>&lt;span style="background: #db7093;">&lt;span style="color: white; mix-blend-mode: difference;">#db7093&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} PAPAYAWHIP             - @+getter &lt;tt>&lt;span style="background: #ffefd5;">&lt;span style="color: white; mix-blend-mode: difference;">#ffefd5&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} PEACHPUFF              - @+getter &lt;tt>&lt;span style="background: #ffdab9;">&lt;span style="color: white; mix-blend-mode: difference;">#ffdab9&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} PERU                   - @+getter &lt;tt>&lt;span style="background: #cd853f;">&lt;span style="color: white; mix-blend-mode: difference;">#cd853f&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} PINK                   - @+getter &lt;tt>&lt;span style="background: #ffc0cb;">&lt;span style="color: white; mix-blend-mode: difference;">#ffc0cb&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} PLUM                   - @+getter &lt;tt>&lt;span style="background: #dda0dd;">&lt;span style="color: white; mix-blend-mode: difference;">#dda0dd&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} POWDERBLUE             - @+getter &lt;tt>&lt;span style="background: #b0e0e6;">&lt;span style="color: white; mix-blend-mode: difference;">#b0e0e6&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} PURPLE                 - @+getter &lt;tt>&lt;span style="background: #800080;">&lt;span style="color: white; mix-blend-mode: difference;">#800080&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} REBECCAPURPLE          - @+getter &lt;tt>&lt;span style="background: #663399;">&lt;span style="color: white; mix-blend-mode: difference;">#663399&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} RED                    - @+getter &lt;tt>&lt;span style="background: #ff0000;">&lt;span style="color: white; mix-blend-mode: difference;">#ff0000&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} ROSYBROWN              - @+getter &lt;tt>&lt;span style="background: #bc8f8f;">&lt;span style="color: white; mix-blend-mode: difference;">#bc8f8f&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} ROYALBLUE              - @+getter &lt;tt>&lt;span style="background: #4169e1;">&lt;span style="color: white; mix-blend-mode: difference;">#4169e1&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} SADDLEBROWN            - @+getter &lt;tt>&lt;span style="background: #8b4513;">&lt;span style="color: white; mix-blend-mode: difference;">#8b4513&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} SALMON                 - @+getter &lt;tt>&lt;span style="background: #fa8072;">&lt;span style="color: white; mix-blend-mode: difference;">#fa8072&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} SANDYBROWN             - @+getter &lt;tt>&lt;span style="background: #f4a460;">&lt;span style="color: white; mix-blend-mode: difference;">#f4a460&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} SEAGREEN               - @+getter &lt;tt>&lt;span style="background: #2e8b57;">&lt;span style="color: white; mix-blend-mode: difference;">#2e8b57&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} SEASHELL               - @+getter &lt;tt>&lt;span style="background: #fff5ee;">&lt;span style="color: white; mix-blend-mode: difference;">#fff5ee&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} SIENNA                 - @+getter &lt;tt>&lt;span style="background: #a0522d;">&lt;span style="color: white; mix-blend-mode: difference;">#a0522d&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} SILVER                 - @+getter &lt;tt>&lt;span style="background: #c0c0c0;">&lt;span style="color: white; mix-blend-mode: difference;">#c0c0c0&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} SKYBLUE                - @+getter &lt;tt>&lt;span style="background: #87ceeb;">&lt;span style="color: white; mix-blend-mode: difference;">#87ceeb&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} SLATEBLUE              - @+getter &lt;tt>&lt;span style="background: #6a5acd;">&lt;span style="color: white; mix-blend-mode: difference;">#6a5acd&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} SLATEGRAY              - @+getter &lt;tt>&lt;span style="background: #708090;">&lt;span style="color: white; mix-blend-mode: difference;">#708090&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} SLATEGREY              - @+getter &lt;tt>&lt;span style="background: #708090;">&lt;span style="color: white; mix-blend-mode: difference;">#708090&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} SNOW                   - @+getter &lt;tt>&lt;span style="background: #fffafa;">&lt;span style="color: white; mix-blend-mode: difference;">#fffafa&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} SPRINGGREEN            - @+getter &lt;tt>&lt;span style="background: #00ff7f;">&lt;span style="color: white; mix-blend-mode: difference;">#00ff7f&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} STEELBLUE              - @+getter &lt;tt>&lt;span style="background: #4682b4;">&lt;span style="color: white; mix-blend-mode: difference;">#4682b4&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} TAN                    - @+getter &lt;tt>&lt;span style="background: #d2b48c;">&lt;span style="color: white; mix-blend-mode: difference;">#d2b48c&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} TEAL                   - @+getter &lt;tt>&lt;span style="background: #008080;">&lt;span style="color: white; mix-blend-mode: difference;">#008080&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} THISTLE                - @+getter &lt;tt>&lt;span style="background: #d8bfd8;">&lt;span style="color: white; mix-blend-mode: difference;">#d8bfd8&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} TOMATO                 - @+getter &lt;tt>&lt;span style="background: #ff6347;">&lt;span style="color: white; mix-blend-mode: difference;">#ff6347&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} TURQUOISE              - @+getter &lt;tt>&lt;span style="background: #40e0d0;">&lt;span style="color: white; mix-blend-mode: difference;">#40e0d0&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} VIOLET                 - @+getter &lt;tt>&lt;span style="background: #ee82ee;">&lt;span style="color: white; mix-blend-mode: difference;">#ee82ee&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} WHEAT                  - @+getter &lt;tt>&lt;span style="background: #f5deb3;">&lt;span style="color: white; mix-blend-mode: difference;">#f5deb3&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} WHITE                  - @+getter &lt;tt>&lt;span style="background: #ffffff;">&lt;span style="color: white; mix-blend-mode: difference;">#ffffff&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} WHITESMOKE             - @+getter &lt;tt>&lt;span style="background: #f5f5f5;">&lt;span style="color: white; mix-blend-mode: difference;">#f5f5f5&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} YELLOW                 - @+getter &lt;tt>&lt;span style="background: #ffff00;">&lt;span style="color: white; mix-blend-mode: difference;">#ffff00&lt;/span>&lt;/span>&lt;/tt>
+ * @property {Color} YELLOWGREEN            - @+getter &lt;tt>&lt;span style="background: #9acd32;">&lt;span style="color: white; mix-blend-mode: difference;">#9acd32&lt;/span>&lt;/span>&lt;/tt>
+ */
+
+/**
+ * @global
+ * @see namespace g2d/colors
+ */
+const colors = {
+    get TRANSPARENT() { return new Color(0, 0, 0, 0) },
+
+    get ALICEBLUE()            { return new Color(240, 248, 255); },
+    get ANTIQUEWHITE()         { return new Color(250, 235, 215); },
+    get AQUA()                 { return new Color(  0, 255, 255); },
+    get AQUAMARINE()           { return new Color(127, 255, 212); },
+    get AZURE()                { return new Color(240, 255, 255); },
+    get BEIGE()                { return new Color(245, 245, 220); },
+    get BISQUE()               { return new Color(255, 228, 196); },
+    get BLACK()                { return new Color(  0,   0,   0); },
+    get BLANCHEDALMOND()       { return new Color(255, 235, 205); },
+    get BLUE()                 { return new Color(  0,   0, 255); },
+    get BLUEVIOLET()           { return new Color(138,  43, 226); },
+    get BROWN()                { return new Color(165,  42,  42); },
+    get BURLYWOOD()            { return new Color(222, 184, 135); },
+    get CADETBLUE()            { return new Color( 95, 158, 160); },
+    get CHARTREUSE()           { return new Color(127, 255,   0); },
+    get CHOCOLATE()            { return new Color(210, 105,  30); },
+    get CORAL()                { return new Color(255, 127,  80); },
+    get CORNFLOWERBLUE()       { return new Color(100, 149, 237); },
+    get CORNSILK()             { return new Color(255, 248, 220); },
+    get CRIMSON()              { return new Color(220,  20,  60); },
+    get CYAN()                 { return new Color(  0, 255, 255); },
+    get DARKBLUE()             { return new Color(  0,   0, 139); },
+    get DARKCYAN()             { return new Color(  0, 139, 139); },
+    get DARKGOLDENROD()        { return new Color(184, 134,  11); },
+    get DARKGRAY()             { return new Color(169, 169, 169); },
+    get DARKGREEN()            { return new Color(  0, 100,   0); },
+    get DARKGREY()             { return new Color(169, 169, 169); },
+    get DARKKHAKI()            { return new Color(189, 183, 107); },
+    get DARKMAGENTA()          { return new Color(139,   0, 139); },
+    get DARKOLIVEGREEN()       { return new Color( 85, 107,  47); },
+    get DARKORANGE()           { return new Color(255, 140,   0); },
+    get DARKORCHID()           { return new Color(153,  50, 204); },
+    get DARKRED()              { return new Color(139,   0,   0); },
+    get DARKSALMON()           { return new Color(233, 150, 122); },
+    get DARKSEAGREEN()         { return new Color(143, 188, 143); },
+    get DARKSLATEBLUE()        { return new Color( 72,  61, 139); },
+    get DARKSLATEGRAY()        { return new Color( 47,  79,  79); },
+    get DARKSLATEGREY()        { return new Color( 47,  79,  79); },
+    get DARKTURQUOISE()        { return new Color(  0, 206, 209); },
+    get DARKVIOLET()           { return new Color(148,   0, 211); },
+    get DEEPPINK()             { return new Color(255,  20, 147); },
+    get DEEPSKYBLUE()          { return new Color(  0, 191, 255); },
+    get DIMGRAY()              { return new Color(105, 105, 105); },
+    get DIMGREY()              { return new Color(105, 105, 105); },
+    get DODGERBLUE()           { return new Color( 30, 144, 255); },
+    get FIREBRICK()            { return new Color(178,  34,  34); },
+    get FLORALWHITE()          { return new Color(255, 250, 240); },
+    get FORESTGREEN()          { return new Color( 34, 139,  34); },
+    get FUCHSIA()              { return new Color(255,   0, 255); },
+    get GAINSBORO()            { return new Color(220, 220, 220); },
+    get GHOSTWHITE()           { return new Color(248, 248, 255); },
+    get GOLD()                 { return new Color(255, 215,   0); },
+    get GOLDENROD()            { return new Color(218, 165,  32); },
+    get GRAY()                 { return new Color(128, 128, 128); },
+    get GREEN()                { return new Color(  0, 128,   0); },
+    get GREENYELLOW()          { return new Color(173, 255,  47); },
+    get GREY()                 { return new Color(128, 128, 128); },
+    get HONEYDEW()             { return new Color(240, 255, 240); },
+    get HOTPINK()              { return new Color(255, 105, 180); },
+    get INDIANRED()            { return new Color(205,  92,  92); },
+    get INDIGO()               { return new Color( 75,   0, 130); },
+    get IVORY()                { return new Color(255, 255, 240); },
+    get KHAKI()                { return new Color(240, 230, 140); },
+    get LAVENDER()             { return new Color(230, 230, 250); },
+    get LAVENDERBLUSH()        { return new Color(255, 240, 245); },
+    get LAWNGREEN()            { return new Color(124, 252,   0); },
+    get LEMONCHIFFON()         { return new Color(255, 250, 205); },
+    get LIGHTBLUE()            { return new Color(173, 216, 230); },
+    get LIGHTCORAL()           { return new Color(240, 128, 128); },
+    get LIGHTCYAN()            { return new Color(224, 255, 255); },
+    get LIGHTGOLDENRODYELLOW() { return new Color(250, 250, 210); },
+    get LIGHTGRAY()            { return new Color(211, 211, 211); },
+    get LIGHTGREEN()           { return new Color(144, 238, 144); },
+    get LIGHTGREY()            { return new Color(211, 211, 211); },
+    get LIGHTPINK()            { return new Color(255, 182, 193); },
+    get LIGHTSALMON()          { return new Color(255, 160, 122); },
+    get LIGHTSEAGREEN()        { return new Color( 32, 178, 170); },
+    get LIGHTSKYBLUE()         { return new Color(135, 206, 250); },
+    get LIGHTSLATEGRAY()       { return new Color(119, 136, 153); },
+    get LIGHTSLATEGREY()       { return new Color(119, 136, 153); },
+    get LIGHTSTEELBLUE()       { return new Color(176, 196, 222); },
+    get LIGHTYELLOW()          { return new Color(255, 255, 224); },
+    get LIME()                 { return new Color(  0, 255,   0); },
+    get LIMEGREEN()            { return new Color( 50, 205,  50); },
+    get LINEN()                { return new Color(250, 240, 230); },
+    get MAGENTA()              { return new Color(255,   0, 255); },
+    get MAROON()               { return new Color(128,   0,   0); },
+    get MEDIUMAQUAMARINE()     { return new Color(102, 205, 170); },
+    get MEDIUMBLUE()           { return new Color(  0,   0, 205); },
+    get MEDIUMORCHID()         { return new Color(186,  85, 211); },
+    get MEDIUMPURPLE()         { return new Color(147, 112, 219); },
+    get MEDIUMSEAGREEN()       { return new Color( 60, 179, 113); },
+    get MEDIUMSLATEBLUE()      { return new Color(123, 104, 238); },
+    get MEDIUMSPRINGGREEN()    { return new Color(  0, 250, 154); },
+    get MEDIUMTURQUOISE()      { return new Color( 72, 209, 204); },
+    get MEDIUMVIOLETRED()      { return new Color(199,  21, 133); },
+    get MIDNIGHTBLUE()         { return new Color( 25,  25, 112); },
+    get MINTCREAM()            { return new Color(245, 255, 250); },
+    get MISTYROSE()            { return new Color(255, 228, 225); },
+    get MOCCASIN()             { return new Color(255, 228, 181); },
+    get NAVAJOWHITE()          { return new Color(255, 222, 173); },
+    get NAVY()                 { return new Color(  0,   0, 128); },
+    get OLDLACE()              { return new Color(253, 245, 230); },
+    get OLIVE()                { return new Color(128, 128,   0); },
+    get OLIVEDRAB()            { return new Color(107, 142,  35); },
+    get ORANGE()               { return new Color(255, 165,   0); },
+    get ORANGERED()            { return new Color(255,  69,   0); },
+    get ORCHID()               { return new Color(218, 112, 214); },
+    get PALEGOLDENROD()        { return new Color(238, 232, 170); },
+    get PALEGREEN()            { return new Color(152, 251, 152); },
+    get PALETURQUOISE()        { return new Color(175, 238, 238); },
+    get PALEVIOLETRED()        { return new Color(219, 112, 147); },
+    get PAPAYAWHIP()           { return new Color(255, 239, 213); },
+    get PEACHPUFF()            { return new Color(255, 218, 185); },
+    get PERU()                 { return new Color(205, 133,  63); },
+    get PINK()                 { return new Color(255, 192, 203); },
+    get PLUM()                 { return new Color(221, 160, 221); },
+    get POWDERBLUE()           { return new Color(176, 224, 230); },
+    get PURPLE()               { return new Color(128,   0, 128); },
+    get REBECCAPURPLE()        { return new Color(102,  51, 153); },
+    get RED()                  { return new Color(255,   0,   0); },
+    get ROSYBROWN()            { return new Color(188, 143, 143); },
+    get ROYALBLUE()            { return new Color( 65, 105, 225); },
+    get SADDLEBROWN()          { return new Color(139,  69,  19); },
+    get SALMON()               { return new Color(250, 128, 114); },
+    get SANDYBROWN()           { return new Color(244, 164,  96); },
+    get SEAGREEN()             { return new Color( 46, 139,  87); },
+    get SEASHELL()             { return new Color(255, 245, 238); },
+    get SIENNA()               { return new Color(160,  82,  45); },
+    get SILVER()               { return new Color(192, 192, 192); },
+    get SKYBLUE()              { return new Color(135, 206, 235); },
+    get SLATEBLUE()            { return new Color(106,  90, 205); },
+    get SLATEGRAY()            { return new Color(112, 128, 144); },
+    get SLATEGREY()            { return new Color(112, 128, 144); },
+    get SNOW()                 { return new Color(255, 250, 250); },
+    get SPRINGGREEN()          { return new Color(  0, 255, 127); },
+    get STEELBLUE()            { return new Color( 70, 130, 180); },
+    get TAN()                  { return new Color(210, 180, 140); },
+    get TEAL()                 { return new Color(  0, 128, 128); },
+    get THISTLE()              { return new Color(216, 191, 216); },
+    get TOMATO()               { return new Color(255,  99,  71); },
+    get TURQUOISE()            { return new Color( 64, 224, 208); },
+    get VIOLET()               { return new Color(238, 130, 238); },
+    get WHEAT()                { return new Color(245, 222, 179); },
+    get WHITE()                { return new Color(255, 255, 255); },
+    get WHITESMOKE()           { return new Color(245, 245, 245); },
+    get YELLOW()               { return new Color(255, 255,   0); },
+    get YELLOWGREEN()          { return new Color(154, 205,  50); },
+};
+
+export default colors;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+        <footer>
+            Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Mon, 16 Mar 2026 21:59:16 GMT
+        </footer>
+    </div>
+</main>
+
+<br class="clear">
+
+<script>
+{
+    const ovviews = document.querySelectorAll(".container-overview");
+    for (const ov of ovviews) {
+        if (ov.children.length === 1 && !ov.children[0].innerHTML.trim()) {
+            ov.parentNode.removeChild(ov);
+        }
+    }
+}
+
+{
+    let deletions = document.querySelectorAll("article > br:first-child");
+    for (const e of deletions) { e.parentNode.removeChild(e); }
+    deletions = document.querySelectorAll("article > br:first-child");
+    for (const e of deletions) { e.parentNode.removeChild(e); }
+    deletions = document.querySelectorAll("article > hr:first-child");
+    for (const e of deletions) { e.parentNode.removeChild(e); }
+    deletions = document.querySelectorAll("article > hr:last-child");
+    for (const e of deletions) { e.parentNode.removeChild(e); }
+}
+
+prettyPrint();
+</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

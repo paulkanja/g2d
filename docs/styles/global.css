@@ -1,0 +1,18 @@
+:root {
+    --bg-col:        #3d2e35;
+    --text-col:      #fdfeff;
+    --text-sec-col:  #eade70;
+    --text-tert-col: #ceb290;
+    --bg-sec-col:    #504230;
+    --bg-dark-col:   #2f2e2a;
+
+    --ptty-text-col:  var(--text-col);
+    --ptty-str-col:   #a1ac00;
+    --ptty-com-col:   #7e857c;
+    --ptty-kw-col:    #f96038;
+    --ptty-fn-col:    #9960b8;
+    --ptty-lit-col:   #fa974f;
+    --ptty-type-col:  #6281de;
+    --ptty-punct-col: #bdbebf;
+    --ptty-brack-col: #7d7d7c;
+} 

@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Class: Shape</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+    <script>
+    window.addEventListener("load", e => {
+        setTimeout (() => window.scrollBy({top: -150, behaviour: "smooth"}), 150)
+    })
+    </script>
+</head>
+
+<body>
+
+
+<main>
+    <nav>
+        <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="g2d_colors.html">g2d/colors</a></li></ul><h3>Classes</h3><ul><li><a href="Canvas2DRenderer.html">Canvas2DRenderer</a></li><li><a href="Circle.html">Circle</a></li><li><a href="Color.html">Color</a></li><li><a href="Ellipse.html">Ellipse</a></li><li><a href="Game.html">Game</a></li><li><a href="GameNode.html">GameNode</a></li><li><a href="GameObject.html">GameObject</a></li><li><a href="InputManager.html">InputManager</a></li><li><a href="Mat3.html">Mat3</a></li><li><a href="Rect.html">Rect</a></li><li><a href="RenderStyle.html">RenderStyle</a></li><li><a href="Renderer.html">Renderer</a></li><li><a href="Scene.html">Scene</a></li><li><a href="Shape.html">Shape</a></li><li><a href="Transform.html">Transform</a></li><li><a href="Vec2.html">Vec2</a></li><li><a href="Vec3.html">Vec3</a></li></ul><h3>Global</h3><ul><li><a href="global.html#colors">colors</a></li><li><a href="global.html#debug.logNodeTree">debug.logNodeTree</a></li><li><a href="global.html#signal">signal</a></li><li><a href="global.html#signal.any">signal.any</a></li><li><a href="global.html#signal.isSignal">signal.isSignal</a></li><li><a href="global.html#signal.shadow">signal.shadow</a></li></ul>
+    </nav>
+    <div id="main">
+        
+
+        
+
+
+
+
+<section>
+
+<header>
+    
+        <h2 class="page-title"><span class="attribs"><span class="type-signature">(abstract) </span></span>Shape<span class="signature">(name)</span><span class="type-signature"></span></h2>
+        
+            <div class="class-description">Base shape class</div>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+    <h2>Constructor</h2>
+    
+
+    
+    <h3 class="name constructor" id="Shape">
+        
+        <span class="type-signature">(abstract) </span>Shape<span class="signature">(name)</span><span class="type-signature"></span>
+    </h3>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+
+    
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>style</code></td>
+            
+
+            <td class="type">
+            
+                <small><tt>const&ensp;</tt></small>
+                <tt><b>
+<span class="param-type"><a href="RenderStyle.html">RenderStyle</a></span> 
+
+</b></tt>
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                 Shape graphical style</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>zIndex</code></td>
+            
+
+            <td class="type">
+            
+                <small><tt></tt></small>
+                <tt><b>
+<span class="param-type">number</span> 
+
+</b></tt>
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                Rendering Z index
+</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="gamenodes_shape.js.html#line16">gamenodes/shape.js:16</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li><a href="GameNode.html">GameNode</a></li>
+    </ul>
+
+
+    
+    <br><br><hr>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h3 class="name" id="Shape.prototype.addChild">
+        
+        <span class="type-signature"></span>Shape.prototype.addChild<span class="signature">(child)</span><span class="type-signature"> &rarr; {boolean}</span>
+    </h3>
+    
+
+    
+
+
+
+<div class="description">
+    Add a child to this node
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        GameNode.prototype.addChild
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="gamenode.js.html#line64">gamenode.js:64</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+    <div class="param-desc">
+        
+        <tt><b>
+<span class="param-type">boolean</span> 
+
+</b></tt>
+
+        
+        &emsp;
+        Success indicator
+    </div>
+
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h3 class="name" id="Shape.prototype.hasChild">
+        
+        <span class="type-signature"></span>Shape.prototype.hasChild<span class="signature">(node)</span><span class="type-signature"> &rarr; {boolean}</span>
+    </h3>
+    
+
+    
+
+
+
+<div class="description">
+    Check if this node has a given node as its direct child
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        GameNode.prototype.hasChild
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="gamenode.js.html#line76">gamenode.js:76</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+    <div class="param-desc">
+        
+        <tt><b>
+<span class="param-type">boolean</span> 
+
+</b></tt>
+
+        
+        &emsp;
+        True if this node has the node as its child
+    </div>
+
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h3 class="name" id="Shape.prototype.removeChild">
+        
+        <span class="type-signature"></span>Shape.prototype.removeChild<span class="signature">(child)</span><span class="type-signature"> &rarr; {boolean}</span>
+    </h3>
+    
+
+    
+
+
+
+<div class="description">
+    Remove a child of this node
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        GameNode.prototype.removeChild
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="gamenode.js.html#line85">gamenode.js:85</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+    <div class="param-desc">
+        
+        <tt><b>
+<span class="param-type">boolean</span> 
+
+</b></tt>
+
+        
+        &emsp;
+        Success indicator
+    </div>
+
+
+    
+
+
+
+
+
+        
+        <br><br><hr>
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+        <footer>
+            Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Mon, 16 Mar 2026 21:59:16 GMT
+        </footer>
+    </div>
+</main>
+
+<br class="clear">
+
+<script>
+{
+    const ovviews = document.querySelectorAll(".container-overview");
+    for (const ov of ovviews) {
+        if (ov.children.length === 1 && !ov.children[0].innerHTML.trim()) {
+            ov.parentNode.removeChild(ov);
+        }
+    }
+}
+
+{
+    let deletions = document.querySelectorAll("article > br:first-child");
+    for (const e of deletions) { e.parentNode.removeChild(e); }
+    deletions = document.querySelectorAll("article > br:first-child");
+    for (const e of deletions) { e.parentNode.removeChild(e); }
+    deletions = document.querySelectorAll("article > hr:first-child");
+    for (const e of deletions) { e.parentNode.removeChild(e); }
+    deletions = document.querySelectorAll("article > hr:last-child");
+    for (const e of deletions) { e.parentNode.removeChild(e); }
+}
+
+prettyPrint();
+</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

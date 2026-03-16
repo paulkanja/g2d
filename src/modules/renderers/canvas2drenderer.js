@@ -1,0 +1,226 @@
+import { RenderQueue }   from "../_utils.js";
+import GameNode          from "../gamenode.js";
+import GameObject        from "../gamenodes/gameobject.js";
+import Renderer          from "../renderer.js";
+import Scene             from "../gamenodes/scene.js";
+import Shape             from "../gamenodes/shape.js";
+import Transform         from "../transform.js";
+import math              from "../math.js";
+import shapes            from "../gamenodes/shapes.js";
+
+
+/**
+ * Canvas 2D renderer
+ * @extends Renderer
+ * @global
+ * @param {number} width  - Viewport width
+ * @param {number} height - Viewport height
+ * @property {number} width - @+readonly Viewport width
+ * @property {number} height - @+readonly Viewport width
+*/
+class Canvas2DRenderer extends Renderer {
+    #canvas;
+    #context;
+
+    get width()  { return this.#canvas.width; }
+    get height() { return this.#canvas.height; }
+
+    constructor(width, height) {
+        super();
+        this.#canvas = new OffscreenCanvas(width, height);
+        this.#context = this.#canvas.getContext("2d");
+    }
+
+    /**
+     * Resize the viewport
+     * @param {number} width
+     * @param {number} height
+     * @return {void}
+     */
+    resizeCanvas(width, height) {
+        this.#canvas.width = width;
+        this.#canvas.height = height;
+    }
+
+    /**
+     * Render a node and its descendants
+     * @param {GameNode} node
+     * @return {OffscreenCanvas} Copy of this renderer's canvas
+     */
+    render(node) {
+        this.#context.clearRect(0, 0, this.#canvas.width, this.#canvas.height);
+        const nodes = new RenderQueue();
+        this.#getNodes(node, nodes);
+        this.#render(nodes);
+        const canvas = new OffscreenCanvas(
+            this.#canvas.width, this.#canvas.height
+        );
+        canvas.getContext("2d").drawImage(this.#canvas, 0, 0);
+        return canvas;
+    }
+
+    #getNodes(node, queue, zIndex = 0, parentTransform = new Transform()) {
+        if (!(node instanceof GameNode)) { return; }
+
+        let transform = parentTransform;
+
+        // Ignore all scenes that are not the main scene
+        if (!queue.size && node instanceof Scene) {
+            // The scene is drawn below all other objects
+            queue.enqueue(-Infinity, [node]);
+        } else if (node instanceof Shape) {
+            transform = transform.clone().applyTransform(node.transform);
+            zIndex += node.zIndex;
+            queue.enqueue(zIndex, [node, transform]);
+        } else if (node instanceof GameObject) {
+            transform = transform.clone().applyTransform(node.transform);
+        }
+
+        for (const child of node.children) {
+            this.#getNodes(child, queue, zIndex, transform);
+        }
+    }
+
+    #applyTransforms(transform) {
+        this.#context.save();
+        this.#context.setTransform(
+            transform.matrix[0][0],
+            transform.matrix[1][0],
+            transform.matrix[0][1],
+            transform.matrix[1][1],
+            transform.matrix[0][2],
+            transform.matrix[1][2],
+        );
+    }
+
+    #render(nodes) {
+        for (const [node, transform] of nodes) {
+            if (node instanceof shapes.Rect) {
+                if (
+                    !node.style.fill &&
+                    !(node.style.stroke && node.style.strokeWidth)
+                ) { continue; }
+                const position = transform.getPosition(),
+                      scale    = transform.getScale();
+                const max = math.hypot(
+                    scale.x * node.width,
+                    scale.y * node.height,
+                )/2;
+                if (
+                    position.x + max < 0                  ||
+                    position.y + max < 0                  ||
+                    position.x - max > this.#canvas.width ||
+                    position.y - max > this.#canvas.height
+                ) { continue; }
+                this.#applyTransforms(transform);
+                if (node.style.fill) {
+                    this.#context.fillStyle = node.style.fill.hexString();
+                    this.#context.fillRect(
+                        -node.width/2, -node.height/2,
+                        node.width, node.height
+                    );
+                }
+                if (node.style.stroke && node.style.strokeWidth) {
+                    this.#context.strokeStyle = node.style.stroke.hexString();
+                    this.#context.lineWidth   = node.style.strokeWidth;
+                    this.#context.strokeRect(
+                        -node.width/2, -node.height/2,
+                        node.width, node.height
+                    );
+                }
+                this.#context.restore();
+                continue;
+            }
+
+            if (node instanceof shapes.Circle) {
+                if (
+                    !node.style.fill &&
+                    !(node.style.stroke && node.style.strokeWidth)
+                ) { continue; }
+                const position = transform.getPosition(),
+                      scale    = transform.getScale();
+                const max = math.hypot(
+                    scale.x * node.radius,
+                    scale.y * node.radius,
+                )/2;
+                if (
+                    position.x + max < 0                  ||
+                    position.y + max < 0                  ||
+                    position.x - max > this.#canvas.width ||
+                    position.y - max > this.#canvas.height
+                ) { continue; }
+                this.#applyTransforms(transform);
+                this.#context.beginPath();
+                this.#context.arc(0, 0, node.radius, 0, math.TAU);
+                this.#context.closePath();
+                if (node.style.fill) {
+                    this.#context.fillStyle = node.style.fill.hexString();
+                    this.#context.fill();
+                }
+                if (node.style.stroke && node.style.strokeWidth) {
+                    this.#context.strokeStyle = node.style.stroke.hexString();
+                    this.#context.lineWidth   = node.style.strokeWidth;
+                    this.#context.stroke();
+                }
+                this.#context.restore();
+                continue;
+            }
+
+            if (node instanceof shapes.Ellipse) {
+                if (
+                    !node.style.fill &&
+                    !(node.style.stroke && node.style.strokeWidth)
+                ) { continue; }
+                const position = transform.getPosition(),
+                      scale    = transform.getScale();
+                const max = math.hypot(
+                    scale.x * node.width,
+                    scale.y * node.height,
+                )/2;
+                if (
+                    position.x + max < 0                  ||
+                    position.y + max < 0                  ||
+                    position.x - max > this.#canvas.width ||
+                    position.y - max > this.#canvas.height
+                ) { continue; }
+                this.#applyTransforms(transform);
+                this.#context.beginPath();
+                this.#context.ellipse(
+                    0, 0,
+                    node.width/2,
+                    node.height/2,
+                    0, 0, math.TAU,
+                );
+                this.#context.closePath();
+                if (node.style.fill) {
+                    this.#context.fillStyle = node.style.fill.hexString();
+                    this.#context.fill();
+                }
+                if (node.style.stroke && node.style.strokeWidth) {
+                    this.#context.strokeStyle = node.style.stroke.hexString();
+                    this.#context.lineWidth   = node.style.strokeWidth;
+                    this.#context.stroke();
+                }
+                this.#context.restore();
+                continue;
+            }
+
+            if (node instanceof Scene) {
+                if (node.background.fill) {
+                    this.#context.save();
+                    this.#context.resetTransform();
+                    this.#context.fillStyle = node.background.fill.hexString();
+                    this.#context.fillRect(
+                        0, 0,
+                        this.#canvas.width,
+                        this.#canvas.height,
+                    );
+                }
+                this.#context.restore();
+                continue;
+            }
+        }
+    }
+}
+
+export default Canvas2DRenderer;

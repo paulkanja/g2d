@@ -1,0 +1,59 @@
+<?js
+    var data = obj;
+    var props = data.subprops || data.properties;
+    var self = this;
+
+    /* sort subprops under their parent props (like opts.classname) */
+    var parentProp = null;
+    props.forEach(function(prop, i) {
+        if (!prop) { return; }
+        if ( parentProp && prop.name && prop.name.indexOf(parentProp.name + '.') === 0 ) {
+            prop.name = prop.name.substr(parentProp.name.length+1);
+            parentProp.subprops = parentProp.subprops || [];
+            parentProp.subprops.push(prop);
+            props[i] = null;
+        }
+        else {
+            parentProp = prop;
+        }
+    });
+
+    /* determine if we need extra columns, "attributes" and "default" */
+    props.hasAttributes = false;
+    props.hasDefault = false;
+    props.hasName = false;
+
+    props.forEach(function(prop) {
+        if (!prop) { return; }
+
+        if (prop.optional || prop.nullable) {
+            props.hasAttributes = true;
+        }
+
+        if (prop.name) {
+            props.hasName = true;
+        }
+
+        if (typeof prop.defaultvalue !== 'undefined' && !data.isEnum) {
+            props.hasDefault = true;
+        }
+    });
+
+    function sliceProps(...args) {
+        var sliced = props.slice(...args);
+        sliced.hasAttributes = props.hasAttributes;
+        sliced.hasDefault    = props.hasDefault;
+        sliced.hasName       = props.hasName;
+        return sliced;
+    }
+?>
+
+<?js if (props.length > 25) { ?>
+    <div style="display: flex; flex-direction: row; gap: 1ch;">
+    <?js= self.partial('propertytable.tmpl', sliceProps(0, props.length>>1)) ?>
+    <?js= self.partial('propertytable.tmpl', sliceProps(props.length>>1)) ?>
+    </div>
+<?js } else { ?>
+    <?js= self.partial('propertytable.tmpl', props) ?>
+<?js } ?>
+
