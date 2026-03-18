@@ -17,7 +17,7 @@
     import g2d from "g2d.js";
 
     const game = new g2d.Game(document.body);
-    game.noclear = true;
+    game.autofocus = false;
 
     const BALL_COUNT    = 40;
     const BALL_RADIUS   = 20;
@@ -111,10 +111,7 @@
     });
 
     game.error.connect((error) => { throw error; });
-    game.start.connect((scene) => {
-        scene.background.fill.a = 192; // transparency for trails
-        g2d.debug.logNodeTree(scene)
-    });
+    game.start.connect((scene) => { g2d.debug.logNodeTree(scene) });
 
     game.start(mainScene);
     </script>
