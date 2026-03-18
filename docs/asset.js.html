@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Class: Renderer</title>
+    <title>Source: asset.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -24,227 +24,52 @@
 
 
 
-
-<section>
-
-<header>
     
-        <h2 class="page-title"><span class="attribs"><span class="type-signature">(abstract) </span></span>Renderer<span class="signature">()</span><span class="type-signature"></span></h2>
-        
-            <div class="class-description">Base Renderer class</div>
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-
-    
-    <h2>Constructor</h2>
-    
-
-    
-    <h3 class="name constructor" id="Renderer">
-        
-        <span class="type-signature">(abstract) </span>Renderer<span class="signature">()</span><span class="type-signature"></span>
-    </h3>
-    
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="renderer.js.html#line7">renderer.js:7</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-    </div>
-
-    
-    <br><br><hr>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-
-    
-
-    
-    <h3 class="name" id="Renderer.prototype.render">
-        
-        <span class="type-signature">(abstract) </span>Renderer.prototype.render<span class="signature">(node)</span><span class="type-signature"></span>
-    </h3>
-    
-
-    
-
-
-
-<div class="description">
-    Render a node and its descendants
-</div>
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="renderer.js.html#line15">renderer.js:15</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-        <br><br><hr>
-    
-
-    
-
-    
-</article>
-
-</section>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { $ABSTRACT } from "./_utils.js"
+import signal        from "./signal.js"
+
+/**
+ * Base asset class
+ * NOTE: Connecting to the load signal after the asset has loaded will immediately trigger the passed callback
+ * @abstract
+ * @global
+ * @param {signal} load - Signal called by this class's instantiater when the relevant asset loads
+ * 
+ * @property {"ERROR"|"OK"|"PENDING"} status - @+readonly Current loading status
+ * @property {signal}                 load   - @+const    SHADOW signal called when the asset is loaded
+ */
+class Asset {
+    #load;
+    #status;
+    #loadData;
+
+    get status() { return this.#status; }
+    get load() { return this.#load; }
+
+    constructor(load) {
+        $ABSTRACT(this, Asset);
+
+        this.#status = "PENDING";
+        this.#load = signal.shadow(load);
+        this.#load.connect(f => {
+            if (this.#status !== "PENDING") {
+                f(this.#status == "OK", ...this.#loadData);
+            }
+            return load.connect(f);
+        });
+        load.connect((status, ...data) => {
+            this.#status = status ? "OK" : "ERROR";
+            this.#loadData = data;
+        });
+    }
+}
+
+export default Asset;
+</code></pre>
+        </article>
+    </section>
 
 
 

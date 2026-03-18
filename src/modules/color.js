@@ -14,6 +14,30 @@ import math from "./math.js"
  * @property {number} a - Alpha value
  */
 class Color {
+    /**
+     * Get a color of a random HSL hue
+     * @return {Color} Randomly generated color
+     */
+    static randomHue() {
+        const h = math.irand(360);
+        const c = 0.5;
+        const h_ = h/60;
+        const x = c*(1 - math.abs(h_%2 - 1));
+        let rgb;
+        if (h_ < 1) { rgb = [c, x, 0]; } else
+        if (h_ < 2) { rgb = [x, c, 0]; } else
+        if (h_ < 3) { rgb = [0, c, x]; } else
+        if (h_ < 4) { rgb = [0, x, c]; } else
+        if (h_ < 5) { rgb = [x, 0, c]; } else
+                    { rgb = [c, 0, x]; }
+        const m = 0.25;
+        return new Color(
+            255*(rgb[0] + m),
+            255*(rgb[1] + m),
+            255*(rgb[2] + m)
+        );
+    }
+
     #r;
     #g;
     #b;
@@ -50,10 +74,10 @@ class Color {
      * @return {string} Hex string representation
      */
     hexString() {
-        const r = this.#r.toString(16).padStart(2, "0");
-        const g = this.#g.toString(16).padStart(2, "0");
-        const b = this.#b.toString(16).padStart(2, "0");
-        const a = this.#a.toString(16).padStart(2, "0");
+        const r = math.round(this.#r).toString(16).padStart(2, "0");
+        const g = math.round(this.#g).toString(16).padStart(2, "0");
+        const b = math.round(this.#b).toString(16).padStart(2, "0");
+        const a = math.round(this.#a).toString(16).padStart(2, "0");
         return `#${r}${g}${b}${a}`;
     }
 }

@@ -64,7 +64,6 @@
             <td class="description last">
                 <?js=
                     (prop.description?.startsWith?.("@+") ? prop.description.replace(/^[^\s]+/, "") : prop.description)
-                        .replace(/NOTE: ([^\n]+)/g, "")
                 ?><?js if (prop.subprops) { ?>
                 <h6>Properties</h6><?js= self.partial('properties.tmpl', prop) ?>
             <?js } ?></td>

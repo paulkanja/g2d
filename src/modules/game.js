@@ -8,19 +8,25 @@ import signal           from "./signal.js"
  * @global
  * @param {HTMLCanvasElement|HTMLElement} element
  * 
- * @property {InputManager} input    - @+const Game input manager
- * @property {Scene}        scene    - @+readonly Currently active scene
- * @property {GameScreen}   screen   - @+readonly Game screen
- * @property {GameViewport} viewport - @+readonly Game renderer viewport
- * @property {signal}       init     - @+const Init SHADOW signal, triggered when the game first starts
- * @property {signal}       resize   - @+const Resize signal, triggered when the game resizes
- * @property {signal}       start    - @+const Start signal, triggered to start the game
- * @property {signal}       update   - @+const Update SHADOW signal, triggered whenever the game updates
+ * @property {InputManager} input         - @+const    Game input manager
+ * @property {Scene|null}   scene         - @+readonly Currently active scene
+ * @property {GameScreen}   screen        - @+readonly Game screen
+ * @property {GameViewport} viewport      - @+readonly Game renderer viewport
+ * @property {boolean}      autofocus     - Flag that determines whether the game automatically focuses when it starts
+ * @property {boolean}      autoresizable - Flag that determines whether the game screen can automatically resize when its parent element resizes
+ * @property {boolean}      initialized   - @+readonly Readonly flag that is true if the game has been initialized
+ * @property {boolean}      noclear       - Flag that determines whether the game clears the screen before redrawing
+ * @property {boolean}      resizable     - Flag that determines whether the game screen can resize (with a higher precedence than autoresizable)
+ * @property {boolean}      running       - @+readonly Readonly flag that is true when the game is running
+ * @property {signal}       error         - @+const SHADOW signal triggered when an error occurs
+ * @property {signal}       init          - @+const SHADOW signal triggered when the game first starts
+ * @property {signal}       resize        - @+const Signal triggered when the game resizes
+ * @property {signal}       start         - @+const Signal triggered by the user to start the game
+ * @property {signal}       update        - @+const SHADOW signal triggered whenever the game updates
  */
 class Game {
     #canvas;
     #context;
-    #scenes;
     #currentScene;
     #renderer;
     #input;
@@ -28,7 +34,7 @@ class Game {
 
     get input() { return this.#input; }
 
-    get currentScene() { return this.#scenes[this.#currentScene]; }
+    get currentScene() { return this.#currentScene; }
 
     get screen() {
         const canvas = this.#canvas;
@@ -47,18 +53,36 @@ class Game {
     }
 
     // FLAGS
-    #autoresize;
+    #autofocus;
+    #autoresizable;
     #initialized;
+    #noclear;
+    #resizable;
     #running;
 
+    get autofocus()     { return this.#autofocus; }
+    get autoresizable() { return this.#autoresizable; }
+    get initialized()   { return this.#initialized; }
+    get noclear()       { return this.#noclear; }
+    get resizable()     { return this.#resizable; }
+    get running()       { return this.#running; }
+
+    set autofocus(value)     { this.#autofocus     = !!value; }
+    set autoresizable(value) { this.#autoresizable = !!value; }
+    set noclear(value)       { this.#noclear       = !!value; }
+    set resizable(value)     { this.#resizable     = !!value; }
+
     // SIGNALS
+    #_error;
     #_update;
+    #error;
     #init;
     #start;
     #resize;
     #stop;
     #update;
 
+    get error()  { return this.#error; }
     get init()   { return this.#init; }
     get start()  { return this.#start; }
     get resize() { return this.#resize; }
@@ -68,17 +92,24 @@ class Game {
     constructor(element) {
         let canvas;
 
-        this.#autoresize = false;
-        const AUTORESIZE_SYMBOL = Symbol("autoresize");
-        let AUTORESIZE_TIMEOUT = 150;
-        let autoresizeTimeout = null;
-
         if (!(element instanceof HTMLElement)) {
             throw new TypeError(
                 `Failed to construct '${this.constructor.name}': ` +
                 `Value is not of type 'HTMLElement'.`
             );
         }
+
+        this.#autofocus     = true;
+        this.#autoresizable = false;
+        this.#initialized   = false;
+        this.#noclear       = false;
+        this.#running       = false;
+        this.#resizable     = true;
+
+        const AUTORESIZE_SYMBOL = Symbol("autoresize");
+        let AUTORESIZE_TIMEOUT = 150;
+        let autoresizeTimeout = null;
+
         if (element instanceof HTMLCanvasElement) {
             canvas = this.#canvas = element;
         } else {{
@@ -90,57 +121,71 @@ class Game {
                 if (autoresizeTimeout) { clearTimeout(autoresizeTimeout); }
                 autoresizeTimeout = setTimeout(() => {
                     const rect = element.getBoundingClientRect();
-                    this.#resize(rect.width, rect.height, AUTORESIZE_SYMBOL);
+                    if (this.#autoresizable) {
+                        this.#resize(rect.width, rect.height, AUTORESIZE_SYMBOL);
+                    }
                 }, AUTORESIZE_TIMEOUT);
             });
             resizeObserver.observe(element);
-            this.#autoresize = true;
+            this.#autoresizable = true;
             element.appendChild(canvas);
         }}
         canvas.tabIndex = 0;
         this.#context = canvas.getContext("2d");
         this.#context.imageSmoothingEnabled = false;
 
-        this.#scenes = [new Scene()];
-        this.#currentScene = 0;
+        this.#currentScene = null;
         this.#input = new InputManager(canvas);
         this.#renderer = new Canvas2DRenderer(canvas.width, canvas.height);
         this.#MAX_DT = 1000;
 
-        this.#initialized = false;
-        this.#running     = false;
-
+        this.#_error  = signal();
         const _init   = signal();
-        // const _resize = this.#_resize = signal();
-        const _update = this.#_update = signal();
+        this.#_update = signal();
+        this.#error  = signal.shadow(this.#_error);
         this.#init   = signal.shadow(_init);
         this.#resize = signal();
         this.#start  = signal();
         this.#stop   = signal();
-        this.#update = signal.shadow(_update);
+        this.#update = signal.shadow(this.#_update);
         this.#resize.connect((width, height, key) => {
-            if (this.#autoresize && key === AUTORESIZE_SYMBOL) {
+            if (!this.#resizable) { return; }
+            if (key === AUTORESIZE_SYMBOL) {
                 canvas.width  = width;
                 canvas.height = height;
                 this.#renderer.resizeCanvas(canvas.width, canvas.height);
                 return;
             }
-            if (!this.#autoresize && !key) {
+            if (!this.#autoresizable && !key) {
                 const rect = element.getBoundingClientRect();
                 canvas.width  = rect.width;
                 canvas.height = rect.height;
                 this.#renderer.resizeCanvas(canvas.width, canvas.height);
                 return;
             }
-        })
-        this.#start.connect(() => {
+        });
+        this.#start.connect((scene) => {
+            if (!(scene instanceof Scene)) {
+                this.#_error(new TypeError(
+                    `Failed to start '${this.constructor.name}': ` +
+                    "Value is not of type Scene"
+                ));
+                return signal.END;
+            }
+            if (scene !== this.#currentScene) {
+                this.#stop(); // for propagation
+                this.#currentScene = scene;
+                scene.fetchAssets();
+            }
             this.#running = true;
             if (!this.#initialized) {
                 this.#initialized = true;
                 _init(this);
-                this.#canvas.focus();
+                if (this.#autofocus) { this.#canvas.focus(); }
             }
-            window.requestAnimationFrame(t => this.#main(t, 16.6667));
+            window.requestAnimationFrame(
+                t => window.requestAnimationFrame(_t => this.#main(_t, _t - t))
+            );
         });
         this.#stop.connect(() => {
             this.#running = false;
@@ -148,18 +193,24 @@ class Game {
     }
 
     #main(t, dt) {
-        if (dt > this.#MAX_DT) { dt = this.#MAX_DT; }
-        this.#_update(dt);
-        this.#render();
-        if (this.#running) {
-            window.requestAnimationFrame(_t => this.#main(_t, _t - t));
+        try {
+            if (dt > this.#MAX_DT) { dt = this.#MAX_DT; }
+            this.#_update(dt);
+            this.#render();
+            if (this.#running) {
+                window.requestAnimationFrame(_t => this.#main(_t, _t - t));
+            }
+        } catch (e) {
+            this.#_error(e);
         }
     }
 
 
     #render() {
-        this.#canvas.width = this.#canvas.width; // cheeky screen clear
-        const image = this.#renderer.render(this.currentScene);
+        if (!this.#noclear) {
+            this.#canvas.width = this.#canvas.width; // cheeky screen clear
+        }
+        const image = this.#renderer.render(this.currentScene, this.#noclear);
         this.#context.drawImage(
             image, 0, 0, this.#canvas.width, this.#canvas.height
         );

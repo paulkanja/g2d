@@ -1,7 +1,9 @@
+const dictionary = require('jsdoc/tag/dictionary');
 const doop = require('jsdoc/util/doop');
 const env = require('jsdoc/env');
 const fs = require('jsdoc/fs');
 const helper = require('jsdoc/util/templateHelper');
+const jsdocname = require('jsdoc/name');
 const logger = require('jsdoc/util/logger');
 const path = require('jsdoc/path');
 const { taffy } = require('@jsdoc/salty');
@@ -9,7 +11,7 @@ const template = require('jsdoc/template');
 const util = require('util');
 
 const htmlsafe = helper.htmlsafe;
-const linkto = helper.linkto;
+const _linkto = helper.linkto;
 const resolveAuthorLinks = helper.resolveAuthorLinks;
 const hasOwnProp = Object.prototype.hasOwnProperty;
 
@@ -214,7 +216,7 @@ function getPathFromDoclet({meta}) {
         meta.filename;
 }
 
-function generate(title, docs, filename, resolveLinks) {
+function generate(title, docs, filename, resolveLinks, icon) {
     let docData;
     let html;
     let outpath;
@@ -224,6 +226,7 @@ function generate(title, docs, filename, resolveLinks) {
     docData = {
         env: env,
         title: title,
+        // icon: icon,
         docs: docs
     };
 
@@ -335,6 +338,10 @@ function linktoTutorial(longName, name) {
     return tutoriallink(name);
 }
 
+function linkto(...args) {
+    return _linkto(...args).replace("global.html", "others.html")
+}
+
 function linktoExternal(longName, name) {
     return linkto(longName, name.replace(/(^"|"$)/g, ''));
 }
@@ -380,10 +387,10 @@ function buildNav(members) {
 
         if (!globalNav) {
             // turn the heading into a link so you can actually get to the global page
-            nav += `<h3>${linkto('global', 'Global')}</h3>`;
+            nav += `<h3>${linkto('others', 'Others')}</h3>`;
         }
         else {
-            nav += `<h3>Global</h3><ul>${globalNav}</ul>`;
+            nav += `<h3>Others</h3><ul>${globalNav}</ul>`;
         }
     }
 
@@ -422,15 +429,26 @@ exports.publish = (taffyData, opts, tutorials) => {
     data = taffyData;
 
     data().each(doclet => {
-        if (doclet.kind === "function") {{
+        if (doclet.kind === "function") {
             const i = doclet.comment.search(/@name|@function|@method/);
             if (i !== -1) {
-                doclet.longname = doclet.comment.substr(i).split(/\s+/)[1];
+                doclet.longname = doclet.comment.substr(i).split(/\s+/)[1] || doclet.longname;;
             }
             doclet.longname = (doclet.longname || doclet.name || "")
                 .replace('#', ".prototype.");
             doclet.name = doclet.longname;
-        }}
+            if (doclet.comment && !doclet.comment.includes("@override")) {
+                doclet.overrides = false;
+            }
+        } else if (doclet.kind === "member") {
+            const i = doclet.comment.search(/@name|@const|@member|@var/);
+            if (i !== -1) {
+                doclet.longname = doclet.comment.substr(i).split(/\s+/)[1] || doclet.longname;;
+            }
+            doclet.longname = (doclet.longname || doclet.name || "")
+                .replace('#', ".prototype.");
+            doclet.name = doclet.longname;
+        }
     });
 
     conf = env.conf.templates || {};
@@ -444,8 +462,8 @@ exports.publish = (taffyData, opts, tutorials) => {
     indexUrl = helper.getUniqueFilename('index');
     // don't call registerLink() on this one! 'index' is also a valid longname
 
-    globalUrl = helper.getUniqueFilename('global');
-    helper.registerLink('global', globalUrl);
+    globalUrl = helper.getUniqueFilename('others');
+    helper.registerLink('others', globalUrl);
 
     // set up templating
     view.layout = conf.default.layoutFile ?
@@ -619,7 +637,7 @@ exports.publish = (taffyData, opts, tutorials) => {
         generateSourceFiles(sourceFiles, opts.encoding);
     }
 
-    if (members.globals.length) { generate('Global', [{kind: 'globalobj'}], globalUrl); }
+    if (members.globals.length) { generate('Others', [{kind: 'globalobj'}], globalUrl); }
 
     // index page displays information from package.json and lists files
     files = find({kind: 'file'});

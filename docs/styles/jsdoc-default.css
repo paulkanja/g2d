@@ -271,8 +271,8 @@ tr > th:last-child { border-right: 1px solid var(--bg-sec-col); }
 }
 
 .important {
-    font-weight: bold;
-    color: #950B02;
+    color: var(--text-tert-col);
+    font-weight: 700;
 }
 
 .yes-def {

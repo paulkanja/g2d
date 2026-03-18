@@ -8,11 +8,6 @@
     <script src="scripts/prettify/lang-css.js"> </script>
     <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
     <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
-    <script>
-    window.addEventListener("load", e => {
-        setTimeout (() => window.scrollBy({top: -150, behaviour: "smooth"}), 150)
-    })
-    </script>
 </head>
 
 <body>
@@ -20,7 +15,7 @@
 
 <main>
     <nav>
-        <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="g2d_colors.html">g2d/colors</a></li></ul><h3>Classes</h3><ul><li><a href="Canvas2DRenderer.html">Canvas2DRenderer</a></li><li><a href="Circle.html">Circle</a></li><li><a href="Color.html">Color</a></li><li><a href="Ellipse.html">Ellipse</a></li><li><a href="Game.html">Game</a></li><li><a href="GameNode.html">GameNode</a></li><li><a href="GameObject.html">GameObject</a></li><li><a href="InputManager.html">InputManager</a></li><li><a href="Mat3.html">Mat3</a></li><li><a href="Rect.html">Rect</a></li><li><a href="RenderStyle.html">RenderStyle</a></li><li><a href="Renderer.html">Renderer</a></li><li><a href="Scene.html">Scene</a></li><li><a href="Shape.html">Shape</a></li><li><a href="Transform.html">Transform</a></li><li><a href="Vec2.html">Vec2</a></li><li><a href="Vec3.html">Vec3</a></li></ul><h3>Global</h3><ul><li><a href="global.html#colors">colors</a></li><li><a href="global.html#debug.logNodeTree">debug.logNodeTree</a></li><li><a href="global.html#signal">signal</a></li><li><a href="global.html#signal.any">signal.any</a></li><li><a href="global.html#signal.isSignal">signal.isSignal</a></li><li><a href="global.html#signal.shadow">signal.shadow</a></li></ul>
+        <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="g2d_colors.html">g2d/colors</a></li></ul><h3>Classes</h3><ul><li><a href="Asset.html">Asset</a></li><li><a href="Canvas2DRenderer.html">Canvas2DRenderer</a></li><li><a href="Circle.html">Circle</a></li><li><a href="Color.html">Color</a></li><li><a href="Drawable.html">Drawable</a></li><li><a href="Ellipse.html">Ellipse</a></li><li><a href="Game.html">Game</a></li><li><a href="GameNode.html">GameNode</a></li><li><a href="GameObject.html">GameObject</a></li><li><a href="ImageAsset.html">ImageAsset</a></li><li><a href="InputManager.html">InputManager</a></li><li><a href="Mat3.html">Mat3</a></li><li><a href="Rect.html">Rect</a></li><li><a href="RenderStyle.html">RenderStyle</a></li><li><a href="Renderer.html">Renderer</a></li><li><a href="Scene.html">Scene</a></li><li><a href="Shape.html">Shape</a></li><li><a href="Sprite.html">Sprite</a></li><li><a href="Transform.html">Transform</a></li><li><a href="Vec2.html">Vec2</a></li><li><a href="Vec3.html">Vec3</a></li></ul><h3>Others</h3><ul><li><a href="others.html#colors">colors</a></li><li><a href="others.html#debug.logNodeTree">debug.logNodeTree</a></li><li><a href="others.html#math">math</a></li><li><a href="others.html#math.clamp">math.clamp</a></li><li><a href="others.html#math.deltaAngle">math.deltaAngle</a></li><li><a href="others.html#math.frand">math.frand</a></li><li><a href="others.html#math.irand">math.irand</a></li><li><a href="others.html#math.lerp">math.lerp</a></li><li><a href="others.html#math.round">math.round</a></li><li><a href="others.html#signal">signal</a></li><li><a href="others.html#signal.any">signal.any</a></li><li><a href="others.html#signal.isSignal">signal.isSignal</a></li><li><a href="others.html#signal.shadow">signal.shadow</a></li></ul>
     </nav>
     <div id="main">
         
@@ -48,6 +43,30 @@
  * @property {number} a - Alpha value
  */
 class Color {
+    /**
+     * Get a color of a random HSL hue
+     * @return {Color} Randomly generated color
+     */
+    static randomHue() {
+        const h = math.irand(360);
+        const c = 0.5;
+        const h_ = h/60;
+        const x = c*(1 - math.abs(h_%2 - 1));
+        let rgb;
+        if (h_ &lt; 1) { rgb = [c, x, 0]; } else
+        if (h_ &lt; 2) { rgb = [x, c, 0]; } else
+        if (h_ &lt; 3) { rgb = [0, c, x]; } else
+        if (h_ &lt; 4) { rgb = [0, x, c]; } else
+        if (h_ &lt; 5) { rgb = [x, 0, c]; } else
+                    { rgb = [c, 0, x]; }
+        const m = 0.25;
+        return new Color(
+            255*(rgb[0] + m),
+            255*(rgb[1] + m),
+            255*(rgb[2] + m)
+        );
+    }
+
     #r;
     #g;
     #b;
@@ -84,10 +103,10 @@ class Color {
      * @return {string} Hex string representation
      */
     hexString() {
-        const r = this.#r.toString(16).padStart(2, "0");
-        const g = this.#g.toString(16).padStart(2, "0");
-        const b = this.#b.toString(16).padStart(2, "0");
-        const a = this.#a.toString(16).padStart(2, "0");
+        const r = math.round(this.#r).toString(16).padStart(2, "0");
+        const g = math.round(this.#g).toString(16).padStart(2, "0");
+        const b = math.round(this.#b).toString(16).padStart(2, "0");
+        const a = math.round(this.#a).toString(16).padStart(2, "0");
         return `#${r}${g}${b}${a}`;
     }
 }
@@ -101,7 +120,7 @@ export default Color;
 
 
         <footer>
-            Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Mon, 16 Mar 2026 22:32:09 GMT
+            Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed, 18 Mar 2026 01:38:52 GMT
         </footer>
     </div>
 </main>

@@ -3,6 +3,7 @@
  * @function signal
  * @return {signal} signal
  * @global
+ * @property {Symbol} END - If a listener returns this, the signal stops propagating
  * @example
  * const sgn = signal();
  * sgn.connect((message) => console.log(message));
@@ -10,13 +11,13 @@
  */
 function signal() {
     const _fs = new Set();
-    const signal = (...data) => {
+    const s = (...data) => {
         for (const f of _fs) {
-            f(...data);
+            if (f(...data) === signal.END) { break; }
         }
     };
 
-    Object.defineProperty(signal, "connect", {
+    Object.defineProperty(s, "connect", {
         value: f => {
             if (typeof f !== "function") { return false; }
             _fs.add(f);
@@ -24,7 +25,7 @@ function signal() {
         }
     });
 
-    Object.defineProperty(signal, "disconnect", {
+    Object.defineProperty(s, "disconnect", {
         value: f => {
             if (typeof f !== "function") { return false; }
             _fs.delete(f);
@@ -32,7 +33,7 @@ function signal() {
         }
     });
 
-    return signal;
+    return s;
 }
 
 /**
@@ -60,6 +61,8 @@ signal.any = function any(...signals) {
     }
     return signal;
 };
+
+signal.END = Symbol("END");
 
 /**
  * Check if a value is a signal

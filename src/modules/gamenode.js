@@ -63,9 +63,23 @@ class GameNode {
      */
     addChild(child) {
         if (!(child instanceof GameNode)) { return false; }
+        if (child === this || child.hasAncestor(this)) { return false; }
         this.#children.add(child);
         child.__updateParent__(this);
         return true;
+    }
+
+    /**
+     * Check if this node has a given node as its ancestor
+     * @param {GameNode} node
+     * @return {boolean} True if this node has the node as its ancestor
+     */
+    hasAncestor(node) {
+        let n = this.#parent;
+        while (n) {
+            if (n === node) { return true; }
+        }
+        return false;
     }
 
     /**

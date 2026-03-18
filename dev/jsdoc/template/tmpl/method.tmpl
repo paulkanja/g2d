@@ -23,7 +23,7 @@ var self = this;
 
 <?js if (data.kind !== 'module' && data.description && !data.hideconstructor) { ?>
 <div class="description">
-    <?js= data.description ?>
+    <?js= data.description.replace(/\n\s*(NOTE:)/g, "<br><span class=\"important\">$1</span>") ?>
 </div>
 <?js } ?>
 

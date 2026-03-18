@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Class: Renderer</title>
+    <title>Source: gamenodes/drawable.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -24,227 +24,48 @@
 
 
 
-
-<section>
-
-<header>
     
-        <h2 class="page-title"><span class="attribs"><span class="type-signature">(abstract) </span></span>Renderer<span class="signature">()</span><span class="type-signature"></span></h2>
-        
-            <div class="class-description">Base Renderer class</div>
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-
-    
-    <h2>Constructor</h2>
-    
-
-    
-    <h3 class="name constructor" id="Renderer">
-        
-        <span class="type-signature">(abstract) </span>Renderer<span class="signature">()</span><span class="type-signature"></span>
-    </h3>
-    
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="renderer.js.html#line7">renderer.js:7</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-    </div>
-
-    
-    <br><br><hr>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-
-    
-
-    
-    <h3 class="name" id="Renderer.prototype.render">
-        
-        <span class="type-signature">(abstract) </span>Renderer.prototype.render<span class="signature">(node)</span><span class="type-signature"></span>
-    </h3>
-    
-
-    
-
-
-
-<div class="description">
-    Render a node and its descendants
-</div>
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="renderer.js.html#line15">renderer.js:15</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-        <br><br><hr>
-    
-
-    
-
-    
-</article>
-
-</section>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { $ABSTRACT } from "../_utils.js";
+import GameObject   from "./gameobject.js";
+import RenderStyle  from "../renderstyle.js";
+
+/**
+ * Base graphic class
+ * NOTE: The Z index must be an Integer
+ * @abstract
+ * @extends GameNode
+ * @global
+ * @param {string} name - Node name
+ * 
+ * @property {RenderStyle} style  - @+const Graphical style
+ * @property {number}      zIndex - Rendering Z index
+ */
+class Drawable extends GameObject {
+    #style;
+    #zIndex;
+
+    get style()  { return this.#style; }
+    get zIndex() { return this.#zIndex; }
+
+    set zIndex(value) {
+        value = +value;
+        if (Number.isInteger(value)) { this.#zIndex = value; }
+    }
+
+    constructor(name) {
+        super(name);
+        $ABSTRACT(this, Drawable);
+        this.#style = new RenderStyle();
+        this.#zIndex = 0;
+    }
+}
+
+export default Drawable;
+</code></pre>
+        </article>
+    </section>
 
 
 

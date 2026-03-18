@@ -8,11 +8,6 @@
     <script src="scripts/prettify/lang-css.js"> </script>
     <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
     <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
-    <script>
-    window.addEventListener("load", e => {
-        setTimeout (() => window.scrollBy({top: -150, behaviour: "smooth"}), 150)
-    })
-    </script>
 </head>
 
 <body>
@@ -20,7 +15,7 @@
 
 <main>
     <nav>
-        <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="g2d_colors.html">g2d/colors</a></li></ul><h3>Classes</h3><ul><li><a href="Canvas2DRenderer.html">Canvas2DRenderer</a></li><li><a href="Circle.html">Circle</a></li><li><a href="Color.html">Color</a></li><li><a href="Ellipse.html">Ellipse</a></li><li><a href="Game.html">Game</a></li><li><a href="GameNode.html">GameNode</a></li><li><a href="GameObject.html">GameObject</a></li><li><a href="InputManager.html">InputManager</a></li><li><a href="Mat3.html">Mat3</a></li><li><a href="Rect.html">Rect</a></li><li><a href="RenderStyle.html">RenderStyle</a></li><li><a href="Renderer.html">Renderer</a></li><li><a href="Scene.html">Scene</a></li><li><a href="Shape.html">Shape</a></li><li><a href="Transform.html">Transform</a></li><li><a href="Vec2.html">Vec2</a></li><li><a href="Vec3.html">Vec3</a></li></ul><h3>Global</h3><ul><li><a href="global.html#colors">colors</a></li><li><a href="global.html#debug.logNodeTree">debug.logNodeTree</a></li><li><a href="global.html#signal">signal</a></li><li><a href="global.html#signal.any">signal.any</a></li><li><a href="global.html#signal.isSignal">signal.isSignal</a></li><li><a href="global.html#signal.shadow">signal.shadow</a></li></ul>
+        <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="g2d_colors.html">g2d/colors</a></li></ul><h3>Classes</h3><ul><li><a href="Asset.html">Asset</a></li><li><a href="Canvas2DRenderer.html">Canvas2DRenderer</a></li><li><a href="Circle.html">Circle</a></li><li><a href="Color.html">Color</a></li><li><a href="Drawable.html">Drawable</a></li><li><a href="Ellipse.html">Ellipse</a></li><li><a href="Game.html">Game</a></li><li><a href="GameNode.html">GameNode</a></li><li><a href="GameObject.html">GameObject</a></li><li><a href="ImageAsset.html">ImageAsset</a></li><li><a href="InputManager.html">InputManager</a></li><li><a href="Mat3.html">Mat3</a></li><li><a href="Rect.html">Rect</a></li><li><a href="RenderStyle.html">RenderStyle</a></li><li><a href="Renderer.html">Renderer</a></li><li><a href="Scene.html">Scene</a></li><li><a href="Shape.html">Shape</a></li><li><a href="Sprite.html">Sprite</a></li><li><a href="Transform.html">Transform</a></li><li><a href="Vec2.html">Vec2</a></li><li><a href="Vec3.html">Vec3</a></li></ul><h3>Others</h3><ul><li><a href="others.html#colors">colors</a></li><li><a href="others.html#debug.logNodeTree">debug.logNodeTree</a></li><li><a href="others.html#math">math</a></li><li><a href="others.html#math.clamp">math.clamp</a></li><li><a href="others.html#math.deltaAngle">math.deltaAngle</a></li><li><a href="others.html#math.frand">math.frand</a></li><li><a href="others.html#math.irand">math.irand</a></li><li><a href="others.html#math.lerp">math.lerp</a></li><li><a href="others.html#math.round">math.round</a></li><li><a href="others.html#signal">signal</a></li><li><a href="others.html#signal.any">signal.any</a></li><li><a href="others.html#signal.isSignal">signal.isSignal</a></li><li><a href="others.html#signal.shadow">signal.shadow</a></li></ul>
     </nav>
     <div id="main">
         
@@ -53,35 +48,118 @@
 <p><a href="https://paulkanja.github.io/g2d/">g2d</a> is a simple JS 2D game engine I am working on as a hobby. Feel free to use the project as you wish, although it is far from being production ready.</p>
 <h2>Example</h2>
 <pre class="prettyprint source lang-html"><code>&lt;body>
+    &lt;style>
+    body {
+        border:  0;
+        margin:  0;
+        padding: 0;
+        overflow: hidden;
+    }
+    &lt;/style>
     &lt;script type=&quot;module&quot;>
-    import g2d from &quot;g2d.js&quot;
+    import g2d from &quot;g2d.js&quot;;
 
     const game = new g2d.Game(document.body);
+    game.noclear = true;
 
-    game.currentScene.background.fill = g2d.colors.GRAY;
+    const BALL_COUNT    = 40;
+    const BALL_RADIUS   = 20;
+    const BALL_SPEED    = 300;
+    const SPAWN_PADDING = 40;
 
-    const rect = new g2d.shapes.Rect(&quot;Red Rect&quot;, 90, 60);
-    rect.transform.setPosition(game.viewport.width/2, game.viewport.height/2);
-    rect.style.fill = g2d.colors.RED;
-    game.currentScene.addChild(rect);
+    const mainScene = new g2d.Scene(&quot;Main Scene&quot;);
+    mainScene.background.fill = new g2d.Color(34, 34, 34); // #222
 
-    const c1 = new g2d.shapes.Circle(&quot;Green Circle&quot;, 20);
-    c1.transform.setPosition(-15, 0);
-    c1.style.fill = g2d.colors.GREEN;
-    rect.addChild(c1);
-    const c2 = new g2d.shapes.Circle(&quot;Blue Circle&quot;, 20);
-    c2.transform.setPosition(15, 0);
-    c2.style.fill = g2d.colors.BLUE;
-    rect.addChild(c2);
+    class Ball extends g2d.shapes.Circle {
+        direction;
 
-    game.resize.connect(() => rect.transform.setPosition(
-        game.viewport.width/2, game.viewport.height/2
-    ));
+        constructor(parent, name) {
+            super(name, BALL_RADIUS);
+            parent.addChild(this);
+            this.direction = new g2d.math.Vec2(
+                g2d.math.frand(-0.125, 0.125) + 0.5*(g2d.math.irand()*2 - 1),
+                g2d.math.frand(-0.125, 0.125) + 0.5*(g2d.math.irand()*2 - 1),
+            ).norm();
+            this.transform.setPosition(
+                g2d.math.irand(BALL_RADIUS + SPAWN_PADDING, game.viewport.width  - BALL_RADIUS - SPAWN_PADDING),
+                g2d.math.irand(BALL_RADIUS + SPAWN_PADDING, game.viewport.height - BALL_RADIUS - SPAWN_PADDING),
+            );
+            this.style.fill = g2d.Color.randomHue();
+        }
+    }
 
-    game.update.connect((dt) => rect.transform.rotate(dt/1000));
+    const balls = [];
+    for (let i = 0; i &lt; BALL_COUNT; ++i) {
+        balls.push(new Ball(mainScene, `Ball ${i + 1}`));
+    }
 
-    g2d.debug.logNodeTree(game.currentScene);
-    game.start();
+    game.update.connect((dt) => {
+        for (let i = 0; i &lt; balls.length; ++i) {
+            const ball = balls[i]
+            if (!i) {
+                ball.velocity = ball.direction.clone().scale(BALL_SPEED*dt/1000);
+            }
+            ball.transform.translate(ball.velocity);
+            let position = ball.transform.getPosition();
+
+            if (position.x - BALL_RADIUS &lt;= 0) {
+                ball.transform.setPosition(BALL_RADIUS, NaN);
+                ball.direction.x *= -1;
+                ball.style.fill = g2d.Color.randomHue();
+            } else if (position.x + BALL_RADIUS >= game.viewport.width) {
+                ball.transform.setPosition(game.viewport.width - BALL_RADIUS, NaN);
+                ball.direction.x *= -1;
+                ball.style.fill = g2d.Color.randomHue();
+            }
+            if (position.y - BALL_RADIUS &lt;= 0) {
+                ball.transform.setPosition(NaN, BALL_RADIUS);
+                ball.direction.y *= -1;
+                ball.style.fill = g2d.Color.randomHue();
+            } else if (position.y + BALL_RADIUS >= game.viewport.height) {
+                ball.transform.setPosition(NaN, game.viewport.height - BALL_RADIUS);
+                ball.direction.y *= -1;
+                ball.style.fill = g2d.Color.randomHue();
+            }
+
+            for (let j = i + 1; j &lt; balls.length; ++j) {
+                const other = balls[j];
+                if (!i) {
+                    other.velocity = other.direction.clone().scale(BALL_SPEED*dt/1000);
+                }
+                const diff = position.clone().sub(other.transform.getPosition());
+                const distance = diff.abs;
+
+                if (distance > 0 && distance &lt; 2*BALL_RADIUS) {
+                    const normal = diff.clone().scale(1/distance);
+                    const rvelocity = ball.velocity.clone().sub(other.velocity);
+                    const normalCoeff = normal.dot(rvelocity);
+
+                    if (normalCoeff > 0) { continue; }
+
+                    const impulse = normal.clone().scale(2*normalCoeff);
+
+                    ball.direction  = ball.velocity.sub(impulse).norm();
+                    other.direction = other.velocity.add(impulse).norm();
+
+                    const overlap = 2*BALL_RADIUS - distance;
+                    diff.scale(overlap/distance/2);
+                    ball.transform.translate(diff);
+                    other.transform.translate(diff.scale(-1));
+
+                    ball.style.fill = g2d.Color.randomHue();
+                    other.style.fill = g2d.Color.randomHue();
+                }
+            }
+        }
+    });
+
+    game.error.connect((error) => { throw error; });
+    game.start.connect((scene) => {
+        scene.background.fill.a = 192; // transparency for trails
+        g2d.debug.logNodeTree(scene)
+    });
+
+    game.start(mainScene);
     &lt;/script>
 &lt;/body>
 </code></pre>
@@ -95,7 +173,7 @@
 
 
         <footer>
-            Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Mon, 16 Mar 2026 22:32:09 GMT
+            Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed, 18 Mar 2026 01:38:52 GMT
         </footer>
     </div>
 </main>

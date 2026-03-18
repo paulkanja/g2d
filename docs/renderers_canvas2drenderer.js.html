@@ -8,11 +8,6 @@
     <script src="scripts/prettify/lang-css.js"> </script>
     <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
     <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
-    <script>
-    window.addEventListener("load", e => {
-        setTimeout (() => window.scrollBy({top: -150, behaviour: "smooth"}), 150)
-    })
-    </script>
 </head>
 
 <body>
@@ -20,7 +15,7 @@
 
 <main>
     <nav>
-        <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="g2d_colors.html">g2d/colors</a></li></ul><h3>Classes</h3><ul><li><a href="Canvas2DRenderer.html">Canvas2DRenderer</a></li><li><a href="Circle.html">Circle</a></li><li><a href="Color.html">Color</a></li><li><a href="Ellipse.html">Ellipse</a></li><li><a href="Game.html">Game</a></li><li><a href="GameNode.html">GameNode</a></li><li><a href="GameObject.html">GameObject</a></li><li><a href="InputManager.html">InputManager</a></li><li><a href="Mat3.html">Mat3</a></li><li><a href="Rect.html">Rect</a></li><li><a href="RenderStyle.html">RenderStyle</a></li><li><a href="Renderer.html">Renderer</a></li><li><a href="Scene.html">Scene</a></li><li><a href="Shape.html">Shape</a></li><li><a href="Transform.html">Transform</a></li><li><a href="Vec2.html">Vec2</a></li><li><a href="Vec3.html">Vec3</a></li></ul><h3>Global</h3><ul><li><a href="global.html#colors">colors</a></li><li><a href="global.html#debug.logNodeTree">debug.logNodeTree</a></li><li><a href="global.html#signal">signal</a></li><li><a href="global.html#signal.any">signal.any</a></li><li><a href="global.html#signal.isSignal">signal.isSignal</a></li><li><a href="global.html#signal.shadow">signal.shadow</a></li></ul>
+        <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="g2d_colors.html">g2d/colors</a></li></ul><h3>Classes</h3><ul><li><a href="Asset.html">Asset</a></li><li><a href="Canvas2DRenderer.html">Canvas2DRenderer</a></li><li><a href="Circle.html">Circle</a></li><li><a href="Color.html">Color</a></li><li><a href="Drawable.html">Drawable</a></li><li><a href="Ellipse.html">Ellipse</a></li><li><a href="Game.html">Game</a></li><li><a href="GameNode.html">GameNode</a></li><li><a href="GameObject.html">GameObject</a></li><li><a href="ImageAsset.html">ImageAsset</a></li><li><a href="InputManager.html">InputManager</a></li><li><a href="Mat3.html">Mat3</a></li><li><a href="Rect.html">Rect</a></li><li><a href="RenderStyle.html">RenderStyle</a></li><li><a href="Renderer.html">Renderer</a></li><li><a href="Scene.html">Scene</a></li><li><a href="Shape.html">Shape</a></li><li><a href="Sprite.html">Sprite</a></li><li><a href="Transform.html">Transform</a></li><li><a href="Vec2.html">Vec2</a></li><li><a href="Vec3.html">Vec3</a></li></ul><h3>Others</h3><ul><li><a href="others.html#colors">colors</a></li><li><a href="others.html#debug.logNodeTree">debug.logNodeTree</a></li><li><a href="others.html#math">math</a></li><li><a href="others.html#math.clamp">math.clamp</a></li><li><a href="others.html#math.deltaAngle">math.deltaAngle</a></li><li><a href="others.html#math.frand">math.frand</a></li><li><a href="others.html#math.irand">math.irand</a></li><li><a href="others.html#math.lerp">math.lerp</a></li><li><a href="others.html#math.round">math.round</a></li><li><a href="others.html#signal">signal</a></li><li><a href="others.html#signal.any">signal.any</a></li><li><a href="others.html#signal.isSignal">signal.isSignal</a></li><li><a href="others.html#signal.shadow">signal.shadow</a></li></ul>
     </nav>
     <div id="main">
         
@@ -33,11 +28,12 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>import { RenderQueue }   from "../_utils.js";
+import Drawable          from "../gamenodes/drawable.js";
 import GameNode          from "../gamenode.js";
 import GameObject        from "../gamenodes/gameobject.js";
 import Renderer          from "../renderer.js";
 import Scene             from "../gamenodes/scene.js";
-import Shape             from "../gamenodes/shape.js";
+import Sprite            from "../gamenodes/sprite.js";
 import Transform         from "../transform.js";
 import math              from "../math.js";
 import shapes            from "../gamenodes/shapes.js";
@@ -79,10 +75,15 @@ class Canvas2DRenderer extends Renderer {
     /**
      * Render a node and its descendants
      * @param {GameNode} node
+     * @param {boolean} noclear - If true, does not clear the screen
      * @return {OffscreenCanvas} Copy of this renderer's canvas
      */
-    render(node) {
-        this.#context.clearRect(0, 0, this.#canvas.width, this.#canvas.height);
+    render(node, noclear) {
+        if (!noclear) {
+            this.#context.clearRect(
+                0, 0, this.#canvas.width, this.#canvas.height
+            );
+        }
         const nodes = new RenderQueue();
         this.#getNodes(node, nodes);
         this.#render(nodes);
@@ -102,7 +103,7 @@ class Canvas2DRenderer extends Renderer {
         if (!queue.size &amp;&amp; node instanceof Scene) {
             // The scene is drawn below all other objects
             queue.enqueue(-Infinity, [node]);
-        } else if (node instanceof Shape) {
+        } else if (node instanceof Drawable) {
             transform = transform.clone().applyTransform(node.transform);
             zIndex += node.zIndex;
             queue.enqueue(zIndex, [node, transform]);
@@ -129,6 +130,30 @@ class Canvas2DRenderer extends Renderer {
 
     #render(nodes) {
         for (const [node, transform] of nodes) {
+            if (node instanceof Sprite) {
+                if (!node.image.image) { continue; }
+                const position = transform.getPosition(),
+                      scale    = transform.getScale();
+                const max = math.hypot(
+                    scale.x * node.width,
+                    scale.y * node.height,
+                )/2;
+                if (
+                    position.x + max &lt; 0                  ||
+                    position.y + max &lt; 0                  ||
+                    position.x - max > this.#canvas.width ||
+                    position.y - max > this.#canvas.height
+                ) { continue; }
+                this.#applyTransforms(transform);
+                this.#context.drawImage(
+                    node.image.image,
+                    -node.width/2, -node.height/2,
+                    node.width, node.height,
+                );
+                this.#context.restore();
+                continue;
+            }
+
             if (node instanceof shapes.Rect) {
                 if (
                     !node.style.fill &amp;&amp;
@@ -151,7 +176,7 @@ class Canvas2DRenderer extends Renderer {
                     this.#context.fillStyle = node.style.fill.hexString();
                     this.#context.fillRect(
                         -node.width/2, -node.height/2,
-                        node.width, node.height
+                        node.width, node.height,
                     );
                 }
                 if (node.style.stroke &amp;&amp; node.style.strokeWidth) {
@@ -266,7 +291,7 @@ export default Canvas2DRenderer;
 
 
         <footer>
-            Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Mon, 16 Mar 2026 22:32:09 GMT
+            Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed, 18 Mar 2026 01:38:52 GMT
         </footer>
     </div>
 </main>

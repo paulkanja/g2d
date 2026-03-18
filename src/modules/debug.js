@@ -19,14 +19,15 @@ function logNodeTree(root, log = [], indent = []) {
     log.push("<");
     log.push(root.constructor.name);
     log.push(">");
-    nextIndent += root.constructor.name.length + 2;
+    // nextIndent += root.constructor.name.length + 2;
     if (root.nodeName) {
         log.push(" ");
         log.push(root.nodeName);
-        nextIndent += root.nodeName.length + 1;
+        // nextIndent += root.nodeName.length + 1;
     }
     if (root.children.length) {
-        log.push(" +\n");
+        // log.push(" +\n");
+        log.push("\n");
         for (const child of root.children) {
             logNodeTree(child, log, [...indent, nextIndent]);
         }

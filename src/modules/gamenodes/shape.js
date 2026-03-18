@@ -1,35 +1,17 @@
 import { $ABSTRACT } from "../_utils.js";
-import GameObject   from "./gameobject.js";
-import RenderStyle  from "../renderstyle.js";
+import Drawable      from "./drawable.js";
 
 /**
  * Base shape class
  * @abstract
- * @extends GameNode
+ * @extends Drawable
  * @global
  * @param {string} name - Node name
- * 
- * @property {RenderStyle} style  - @+const Shape graphical style
- * @property {number}      zIndex - Rendering Z index
- * NOTE: The Z index must be an Integer
  */
-class Shape extends GameObject {
-    #style;
-    #zIndex;
-
-    get style()  { return this.#style; }
-    get zIndex() { return this.#zIndex; }
-
-    set zIndex(value) {
-        value = +value;
-        if (Number.isInteger(value)) { this.#zIndex = value; }
-    }
-
+class Shape extends Drawable {
     constructor(name) {
         super(name);
         $ABSTRACT(this, Shape);
-        this.#style = new RenderStyle();
-        this.#zIndex = 0;
     }
 }
 

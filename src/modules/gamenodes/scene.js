@@ -1,5 +1,6 @@
-import GameNode    from "../gamenode.js";
-import RenderStyle from "../gamenode.js";
+import GameNode     from "../gamenode.js";
+import RenderStyle  from "../renderstyle.js";
+import Sprite       from "./sprite.js";
 
 /**
  * Scene class
@@ -18,6 +19,24 @@ class Scene extends GameNode {
         super(name);
         this.#background = new RenderStyle();
     }
+
+    #fetchNodeAssets(node) {
+        if (node instanceof Sprite) {
+            node.image.fetch();
+        }
+        for (const child of node.children) {
+            this.#fetchNodeAssets(child);
+        }
+    }
+
+    /**
+     * Load assets that are connected to the scene
+     * @return {void}
+     */
+    fetchAssets() {
+        this.#fetchNodeAssets(this);
+    }
+
 }
 
 export default Scene;

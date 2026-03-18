@@ -8,11 +8,6 @@
     <script src="scripts/prettify/lang-css.js"> </script>
     <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
     <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
-    <script>
-    window.addEventListener("load", e => {
-        setTimeout (() => window.scrollBy({top: -150, behaviour: "smooth"}), 150)
-    })
-    </script>
 </head>
 
 <body>
@@ -20,7 +15,7 @@
 
 <main>
     <nav>
-        <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="g2d_colors.html">g2d/colors</a></li></ul><h3>Classes</h3><ul><li><a href="Canvas2DRenderer.html">Canvas2DRenderer</a></li><li><a href="Circle.html">Circle</a></li><li><a href="Color.html">Color</a></li><li><a href="Ellipse.html">Ellipse</a></li><li><a href="Game.html">Game</a></li><li><a href="GameNode.html">GameNode</a></li><li><a href="GameObject.html">GameObject</a></li><li><a href="InputManager.html">InputManager</a></li><li><a href="Mat3.html">Mat3</a></li><li><a href="Rect.html">Rect</a></li><li><a href="RenderStyle.html">RenderStyle</a></li><li><a href="Renderer.html">Renderer</a></li><li><a href="Scene.html">Scene</a></li><li><a href="Shape.html">Shape</a></li><li><a href="Transform.html">Transform</a></li><li><a href="Vec2.html">Vec2</a></li><li><a href="Vec3.html">Vec3</a></li></ul><h3>Global</h3><ul><li><a href="global.html#colors">colors</a></li><li><a href="global.html#debug.logNodeTree">debug.logNodeTree</a></li><li><a href="global.html#signal">signal</a></li><li><a href="global.html#signal.any">signal.any</a></li><li><a href="global.html#signal.isSignal">signal.isSignal</a></li><li><a href="global.html#signal.shadow">signal.shadow</a></li></ul>
+        <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="g2d_colors.html">g2d/colors</a></li></ul><h3>Classes</h3><ul><li><a href="Asset.html">Asset</a></li><li><a href="Canvas2DRenderer.html">Canvas2DRenderer</a></li><li><a href="Circle.html">Circle</a></li><li><a href="Color.html">Color</a></li><li><a href="Drawable.html">Drawable</a></li><li><a href="Ellipse.html">Ellipse</a></li><li><a href="Game.html">Game</a></li><li><a href="GameNode.html">GameNode</a></li><li><a href="GameObject.html">GameObject</a></li><li><a href="ImageAsset.html">ImageAsset</a></li><li><a href="InputManager.html">InputManager</a></li><li><a href="Mat3.html">Mat3</a></li><li><a href="Rect.html">Rect</a></li><li><a href="RenderStyle.html">RenderStyle</a></li><li><a href="Renderer.html">Renderer</a></li><li><a href="Scene.html">Scene</a></li><li><a href="Shape.html">Shape</a></li><li><a href="Sprite.html">Sprite</a></li><li><a href="Transform.html">Transform</a></li><li><a href="Vec2.html">Vec2</a></li><li><a href="Vec3.html">Vec3</a></li></ul><h3>Others</h3><ul><li><a href="others.html#colors">colors</a></li><li><a href="others.html#debug.logNodeTree">debug.logNodeTree</a></li><li><a href="others.html#math">math</a></li><li><a href="others.html#math.clamp">math.clamp</a></li><li><a href="others.html#math.deltaAngle">math.deltaAngle</a></li><li><a href="others.html#math.frand">math.frand</a></li><li><a href="others.html#math.irand">math.irand</a></li><li><a href="others.html#math.lerp">math.lerp</a></li><li><a href="others.html#math.round">math.round</a></li><li><a href="others.html#signal">signal</a></li><li><a href="others.html#signal.any">signal.any</a></li><li><a href="others.html#signal.isSignal">signal.isSignal</a></li><li><a href="others.html#signal.shadow">signal.shadow</a></li></ul>
     </nav>
     <div id="main">
         
@@ -34,6 +29,15 @@
         <article>
             <pre class="prettyprint source linenums"><code>import { $DEFINE } from "./_utils.js"
 
+/**
+ * Shadows inbuilt Math object and implements mathematical utilities
+ * @property {number} TAU  - @+const Mathematical constant equal to 2π
+ * @property {class}  Vec2 - @+const {@link Vec2}
+ * @property {class}  Vec3 - @+const {@link Vec3}
+ * @property {class}  Mat3 - @+const {@link Mat3}
+ * @const
+ * @global
+ */
 const math = {};
 
 {
@@ -266,7 +270,8 @@ $DEFINE(Vec2, function lerp(a, b, t) {
  * @return {Vec2} Random unit vector
  */
 $DEFINE(Vec2, function random() {
-    return new Vec2(math.frand(-1, 1), math.frand(-1, 1)).norm();
+    const angle = math.frand(0, math.TAU);
+    return new Vec2(math.cos(angle), math.sin(angle));
 });
 
 /**
@@ -457,11 +462,10 @@ $DEFINE(Vec3, function lerp(a, b, t) {
  * @return {Vec3} Random unit vector
  */
 $DEFINE(Vec3, function random() {
-    return new Vec3(
-        math.frand(-1, 1),
-        math.frand(-1, 1),
-        math.frand(-1, 1),
-    ).norm();
+    const angle = math.frand(0,  math.TAU);
+    const z     = math.frand(-1, 1);
+    const r     = math.sqrt(1 - z*z);
+    return new Vec3(r*math.cos(angle), r*math.sin(angle), z);
 });
 
 /**
@@ -681,6 +685,7 @@ class Mat3 {
  * @param {number} min
  * @param {number} max
  * @return {number} Clamped number between min and max
+ * @global
  */
 function clamp(n, min, max) {
     if (isNaN(min) || isNaN(max)) { return +n; }
@@ -689,38 +694,46 @@ function clamp(n, min, max) {
 }
 
 /**
+ * Compute the circular distance between two angles
+ * @function math.deltaAngle
+ * @param {number} a - Angle in radians
+ * @param {number} b - Angle in radians
+ * @return {number} Circular distance between the two angles
+ * @global
+ */
+function deltaAngle(a, b) {
+    let d = math.abs(a - b);
+    return math.min(d, math.TAU - d);
+}
+
+/**
  * Get a random number between a maximum and a minimum
+ * NOTE: If no arguments are passed, the function behaves like math.random()
  * @function math.frand
- * 
  * @param {number} min - Inclusive
  * @param {number} max - Exclusive
  * @return {number} Random number between min and max
- * 
- * @param {number} [max=1] - Exclusive
- * @return {number} Random number between 0 and max
+ * @global
  */
 function frand(min, max) {
-    if (isNaN(max)) {
-        if (isNaN(min)) { return math.random(); }
-        [min, max] = [0, min];
-    }
-    if (isNaN(min)) { min = 0; }
+    min ||= 0;
+    max ||= 0;
+    if (!min &amp;&amp; !max) { return math.random(); }
     if (min > max) { [min, max] = [max, min]; }
     return min + math.random()*(max - min);
 }
 
 /**
  * Get a random integer between a maximum and a minimum
+ * NOTE: If no arguments are passed, the function randomly returns either 0 or 1
  * @function math.irand
- * 
  * @param {number} min - Inclusive
  * @param {number} max - Exclusive
  * @return {number} Random integer between min and max
- * 
- * @param {number} [max=1] - Exclusive
- * @return {number} Random integer between 0 and max
+ * @global
  */
 function irand(min, max) {
+    if (!min &amp;&amp; !max) { return +(math.random() > 0.5); }
     return math.floor(math.frand(min, max));
 }
 
@@ -731,6 +744,7 @@ function irand(min, max) {
  * @param {number} b - Final number
  * @param {number} t - Interpolation ratio
  * @return {number} Interpolated number between a and b
+ * @global
  */
 function lerp(a, b, t) {
     return a*t + b*(1 - t);
@@ -742,6 +756,7 @@ function lerp(a, b, t) {
  * @param {number}  n    - Number to round
  * @param {number} [e=0] - Power of ten to round to
  * @return {number} Rounded number
+ * @global
  */
 function round(n, e) {
     if (!e || !Number.isInteger(e)) { return Math.round(n); }
@@ -749,21 +764,16 @@ function round(n, e) {
     return Math.round(n/e)*e;
 };
 
-/**
- * Twice PI
- * @property {number} math.TAU
- * @const
- */
-
-math.Mat3  = Mat3;
-math.Vec2  = Vec2;
-math.Vec2  = Vec3;
-math.TAU   = Math.PI*2;
-math.clamp = clamp;
-math.frand = frand;
-math.irand = irand;
-math.lerp  = lerp;
-math.round = round;
+math.Mat3       = Mat3;
+math.Vec2       = Vec2;
+math.Vec3       = Vec3;
+math.TAU        = Math.PI*2;
+math.clamp      = clamp;
+math.deltaAngle = clamp;
+math.frand      = frand;
+math.irand      = irand;
+math.lerp       = lerp;
+math.round      = round;
 
 export default math;
 </code></pre>
@@ -774,7 +784,7 @@ export default math;
 
 
         <footer>
-            Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Mon, 16 Mar 2026 22:32:09 GMT
+            Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed, 18 Mar 2026 01:38:52 GMT
         </footer>
     </div>
 </main>

@@ -1,5 +1,14 @@
 import { $DEFINE } from "./_utils.js"
 
+/**
+ * Shadows inbuilt Math object and implements mathematical utilities
+ * @property {number} TAU  - @+const Mathematical constant equal to 2π
+ * @property {class}  Vec2 - @+const {@link Vec2}
+ * @property {class}  Vec3 - @+const {@link Vec3}
+ * @property {class}  Mat3 - @+const {@link Mat3}
+ * @const
+ * @global
+ */
 const math = {};
 
 {
@@ -232,7 +241,8 @@ $DEFINE(Vec2, function lerp(a, b, t) {
  * @return {Vec2} Random unit vector
  */
 $DEFINE(Vec2, function random() {
-    return new Vec2(math.frand(-1, 1), math.frand(-1, 1)).norm();
+    const angle = math.frand(0, math.TAU);
+    return new Vec2(math.cos(angle), math.sin(angle));
 });
 
 /**
@@ -423,11 +433,10 @@ $DEFINE(Vec3, function lerp(a, b, t) {
  * @return {Vec3} Random unit vector
  */
 $DEFINE(Vec3, function random() {
-    return new Vec3(
-        math.frand(-1, 1),
-        math.frand(-1, 1),
-        math.frand(-1, 1),
-    ).norm();
+    const angle = math.frand(0,  math.TAU);
+    const z     = math.frand(-1, 1);
+    const r     = math.sqrt(1 - z*z);
+    return new Vec3(r*math.cos(angle), r*math.sin(angle), z);
 });
 
 /**
@@ -647,6 +656,7 @@ class Mat3 {
  * @param {number} min
  * @param {number} max
  * @return {number} Clamped number between min and max
+ * @global
  */
 function clamp(n, min, max) {
     if (isNaN(min) || isNaN(max)) { return +n; }
@@ -655,38 +665,46 @@ function clamp(n, min, max) {
 }
 
 /**
+ * Compute the circular distance between two angles
+ * @function math.deltaAngle
+ * @param {number} a - Angle in radians
+ * @param {number} b - Angle in radians
+ * @return {number} Circular distance between the two angles
+ * @global
+ */
+function deltaAngle(a, b) {
+    let d = math.abs(a - b);
+    return math.min(d, math.TAU - d);
+}
+
+/**
  * Get a random number between a maximum and a minimum
+ * NOTE: If no arguments are passed, the function behaves like math.random()
  * @function math.frand
- * 
  * @param {number} min - Inclusive
  * @param {number} max - Exclusive
  * @return {number} Random number between min and max
- * 
- * @param {number} [max=1] - Exclusive
- * @return {number} Random number between 0 and max
+ * @global
  */
 function frand(min, max) {
-    if (isNaN(max)) {
-        if (isNaN(min)) { return math.random(); }
-        [min, max] = [0, min];
-    }
-    if (isNaN(min)) { min = 0; }
+    min ||= 0;
+    max ||= 0;
+    if (!min && !max) { return math.random(); }
     if (min > max) { [min, max] = [max, min]; }
     return min + math.random()*(max - min);
 }
 
 /**
  * Get a random integer between a maximum and a minimum
+ * NOTE: If no arguments are passed, the function randomly returns either 0 or 1
  * @function math.irand
- * 
  * @param {number} min - Inclusive
  * @param {number} max - Exclusive
  * @return {number} Random integer between min and max
- * 
- * @param {number} [max=1] - Exclusive
- * @return {number} Random integer between 0 and max
+ * @global
  */
 function irand(min, max) {
+    if (!min && !max) { return +(math.random() > 0.5); }
     return math.floor(math.frand(min, max));
 }
 
@@ -697,6 +715,7 @@ function irand(min, max) {
  * @param {number} b - Final number
  * @param {number} t - Interpolation ratio
  * @return {number} Interpolated number between a and b
+ * @global
  */
 function lerp(a, b, t) {
     return a*t + b*(1 - t);
@@ -708,6 +727,7 @@ function lerp(a, b, t) {
  * @param {number}  n    - Number to round
  * @param {number} [e=0] - Power of ten to round to
  * @return {number} Rounded number
+ * @global
  */
 function round(n, e) {
     if (!e || !Number.isInteger(e)) { return Math.round(n); }
@@ -715,20 +735,15 @@ function round(n, e) {
     return Math.round(n/e)*e;
 };
 
-/**
- * Twice PI
- * @property {number} math.TAU
- * @const
- */
-
-math.Mat3  = Mat3;
-math.Vec2  = Vec2;
-math.Vec2  = Vec3;
-math.TAU   = Math.PI*2;
-math.clamp = clamp;
-math.frand = frand;
-math.irand = irand;
-math.lerp  = lerp;
-math.round = round;
+math.Mat3       = Mat3;
+math.Vec2       = Vec2;
+math.Vec3       = Vec3;
+math.TAU        = Math.PI*2;
+math.clamp      = clamp;
+math.deltaAngle = clamp;
+math.frand      = frand;
+math.irand      = irand;
+math.lerp       = lerp;
+math.round      = round;
 
 export default math;
