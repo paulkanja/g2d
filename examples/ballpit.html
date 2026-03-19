@@ -35,8 +35,14 @@
                 g2d.math.frand(-0.125, 0.125) + 0.5*(g2d.math.irand()*2 - 1),
             ).norm();
             this.transform.setPosition(
-                g2d.math.irand(BALL_RADIUS + SPAWN_PADDING, game.viewport.width  - BALL_RADIUS - SPAWN_PADDING),
-                g2d.math.irand(BALL_RADIUS + SPAWN_PADDING, game.viewport.height - BALL_RADIUS - SPAWN_PADDING),
+                g2d.math.irand(
+                    BALL_RADIUS + SPAWN_PADDING,
+                    game.viewport.width  - BALL_RADIUS - SPAWN_PADDING
+                ),
+                g2d.math.irand(
+                    BALL_RADIUS + SPAWN_PADDING,
+                    game.viewport.height - BALL_RADIUS - SPAWN_PADDING
+                ),
             );
             this.style.fill = g2d.Color.randomHue();
         }
@@ -51,7 +57,7 @@
         for (let i = 0; i < balls.length; ++i) {
             const ball = balls[i]
             if (!i) {
-                ball.velocity = ball.direction.clone().scale(BALL_SPEED*dt/1000);
+                ball.velocity = ball.direction.scale(BALL_SPEED*dt/1000);
             }
             ball.transform.translate(ball.velocity);
             let position = ball.transform.getPosition();
@@ -78,27 +84,27 @@
             for (let j = i + 1; j < balls.length; ++j) {
                 const other = balls[j];
                 if (!i) {
-                    other.velocity = other.direction.clone().scale(BALL_SPEED*dt/1000);
+                    other.velocity = other.direction.scale(BALL_SPEED*dt/1000);
                 }
-                const diff = position.clone().sub(other.transform.getPosition());
-                const distance = diff.abs;
+                let normal = position.sub(other.transform.getPosition());
+                const distance = normal.abs;
 
                 if (distance > 0 && distance < 2*BALL_RADIUS) {
-                    const normal = diff.clone().scale(1/distance);
-                    const rvelocity = ball.velocity.clone().sub(other.velocity);
+                    normal = normal.scale(1/distance);
+                    const rvelocity = ball.velocity.sub(other.velocity);
                     const normalCoeff = normal.dot(rvelocity);
 
                     if (normalCoeff > 0) { continue; }
 
-                    const impulse = normal.clone().scale(2*normalCoeff);
+                    const impulse = normal.scale(2*normalCoeff);
 
                     ball.direction  = ball.velocity.sub(impulse).norm();
                     other.direction = other.velocity.add(impulse).norm();
 
                     const overlap = 2*BALL_RADIUS - distance;
-                    diff.scale(overlap/distance/2);
-                    ball.transform.translate(diff);
-                    other.transform.translate(diff.scale(-1));
+                    normal = normal.scale(overlap/2);
+                    ball.transform.translate(normal);
+                    other.transform.translate(normal.scale(-1));
 
                     ball.style.fill = g2d.Color.randomHue();
                     other.style.fill = g2d.Color.randomHue();

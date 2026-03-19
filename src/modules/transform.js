@@ -28,7 +28,9 @@ class Transform {
      */
     applyTransform(m) {
         if (m instanceof Transform) { m = m.matrix; }
-        if (m && m[Symbol.iterator]) { this.#matrix.mul(m); }
+        if (m && m[Symbol.iterator]) {
+            this.#matrix.set(this.#matrix.mul(m));
+        }
         return this;
     }
 
@@ -74,11 +76,11 @@ class Transform {
      */
     rotate(angle) {
         const cos = math.cos(angle), sin = math.sin(angle);
-        this.#matrix.mul([
+        this.#matrix.set(this.#matrix.mul([
             cos, -sin,   0,
             sin,  cos,   0,
               0,    0,   1
-        ]);
+        ]));
         return this;
     }
 
@@ -94,11 +96,11 @@ class Transform {
         } else {
             f = [...f];
         }
-        this.#matrix.mul([
+        this.#matrix.set(this.#matrix.mul([
             f[0],    0,   0,
                0, f[1],   0,
                0,    0,   1
-        ]);
+        ]));
         return this;
     }
 

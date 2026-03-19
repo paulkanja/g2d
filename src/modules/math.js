@@ -109,40 +109,33 @@ class Vec2 {
 
     constructor(x, y) {
         this.#x = this.#y = 0;
-        this.x = x;
-        this.y = y;
+        this.set(x, y);
     }
 
     /**
-     * Set this vector to its sum with another vector
+     * Calculate the sum of this vector and another vector
      * @param {Iterable<number>} v
-     * @return {this} Returns itself
+     * @return {Vec2} Sum vector
      */
     add(v) {
-        v = [...v, 0, 0];
-        this.x += v[0];
-        this.y += v[1];
-        return this;
+        v = [...v];
+        return new Vec2(
+            this.x + v[0],
+            this.y + v[1],
+        );
     }
 
     /**
-     * Clone this vector
-     * @return {Vec2} Returns a copy of this vector
-     */
-    clone() {
-        return new Vec2(this.x, this.y);
-    }
-
-    /**
-     * Set this vector to its componentwise product with another vector
+     * Calculate the componentwise product of this vector and another vector
      * @param {Iterable<number>} v
-     * @return {this} Returns itself
+     * @return {Vec2} Product vector
      */
     cmul(v) {
         v = [...v, 0, 0];
-        this.x *= v[0];
-        this.y *= v[1];
-        return this;
+        return new Vec2(
+            this.x*v[0],
+            this.y*v[1],
+        );
     }
 
     /**
@@ -159,8 +152,8 @@ class Vec2 {
     }
 
     /**
-     * Normalize this vector
-     * @return {this} Returns itself
+     * Calculate the normalized form of this vector
+     * @return {Vec2} Unit normalized vector
      */
     norm() {
         const abs = this.abs;
@@ -169,52 +162,56 @@ class Vec2 {
     }
 
     /**
-     * Rotate this vector counterclockwise by an angle
+     * Calculate the rotation of this vector by an angle
+     * NOTE: The positive direction of rotation is counterclockwise
      * @param {number} angle
-     * @return {this} Returns itself
+     * @return {Vec2} Rotated vector
      */
     rotate(angle) {
-        const {x, y} = this;
         const cos = math.cos(angle);
         const sin = math.sin(angle);
-        this.x = x*cos - y*sin;
-        this.y = x*sin + y*cos;
-        return this;
+        return new Vec2(
+            this.x*cos - this.y*sin,
+            this.x*sin + this.y*cos,
+        );
     }
 
     /**
-     * Scale this vector by a scalar value
+     * Calculate the product of this vector and a scalar value
      * @param {number} f
-     * @return {this} Returns itself
+     * @return {Vec2} Scaled vector
      */
     scale(f) {
-        this.x *= f;
-        this.y *= f;
-        return this;
+        return new Vec2(
+            this.x*f,
+            this.y*f,
+        );
     }
 
     /**
      * Set this vector's X and Y value
-     * @param {number} x
+     * @param {number|Iterable<number>} x
      * @param {number} y
      * @return {this} Returns itself
      */
     set(x, y) {
+        if (x && x[Symbol.iterator]) { [x, y] = x; }
         this.x = x;
         this.y = y;
         return this;
     }
 
     /**
-     * Set this vector to its difference with another vector
+     * Calculate the difference between this vector and another vector
      * @param {Iterable<number>} v
-     * @return {this} Returns itself
+     * @return {Vec2} Difference vector
      */
     sub(v) {
-        v = [...v, 0, 0];
-        this.x -= v[0];
-        this.y -= v[1];
-        return this;
+        v = [...v];
+        return new Vec2(
+            this.x - v[0],
+            this.y - v[1],
+        );
     }
 }
 
@@ -302,43 +299,35 @@ class Vec3 {
 
     constructor(x, y, z) {
         this.#x = this.#y = this.#z = 0;
-        this.x = x;
-        this.y = y;
-        this.z = z;
+        this.set(x, y, z);
     }
 
     /**
-     * Set this vector to its sum with another vector
+     * Calculate the sum of this vector and another vector
      * @param {Iterable<number>} v
-     * @return {this} Returns itself
+     * @return {Vec3} Sum vector
      */
     add(v) {
         v = [...v];
-        this.x += v[0];
-        this.y += v[1];
-        this.z += v[2];
-        return this;
+        return new Vec3(
+            this.x + v[0],
+            this.y + v[1],
+            this.z + v[2],
+        );
     }
 
     /**
-     * Clone this vector
-     * @return {Vec3} Returns a copy of this vector
-     */
-    clone() {
-        return new Vec3(this.x, this.y, this.z);
-    }
-
-    /**
-     * Set this vector to its componentwise product with another vector
+     * Calculate the componentwise product of this vector and another vector
      * @param {Iterable<number>} v
-     * @return {this} Returns itself
+     * @return {Vec3} Product vector
      */
     cmul(v) {
         v = [...v, 0, 0, 0];
-        this.x *= v[0];
-        this.y *= v[1];
-        this.z *= v[2];
-        return this;
+        return new Vec3(
+            this.x*v[0],
+            this.y*v[1],
+            this.z*v[2],
+        );
     }
 
     // TODO: Implement Vec3.cross
@@ -358,8 +347,8 @@ class Vec3 {
     }
 
     /**
-     * Normalize this vector
-     * @return {this} Returns itself
+     * Calculate the normalized form of this vector
+     * @return {Vec3} Unit normalized vector
      */
     norm() {
         const abs = this.abs;
@@ -370,15 +359,16 @@ class Vec3 {
     // TODO: Implement Vec3.rotate
 
     /**
-     * Scale this vector by a scalar value
+     * Calculate the product of this vector and a scalar value
      * @param {number} f
-     * @return {this} Returns itself
+     * @return {Vec3} Scaled vector
      */
     scale(f) {
-        this.x *= f;
-        this.y *= f;
-        this.z *= f;
-        return this;
+        return new Vec3(
+            this.x*f,
+            this.y*f,
+            this.z*f,
+        );
     }
 
     /**
@@ -389,6 +379,7 @@ class Vec3 {
      * @return {this} Returns itself
      */
     set(x, y, z) {
+        if (x && x[Symbol.iterator]) { [x, y, z] = x; }
         this.x = x;
         this.y = y;
         this.z = z;
@@ -396,16 +387,17 @@ class Vec3 {
     }
 
     /**
-     * Set this vector to its difference with another vector
+     * Calculate the difference between this vector and another vector
      * @param {Iterable<number>} v
-     * @return {this} Returns itself
+     * @return {Vec3} Product vector
      */
     sub(v) {
         v = [...v];
-        this.x -= v[0];
-        this.y -= v[1];
-        this.z -= v[2];
-        return this;
+        return new Vec3(
+            this.x - v[0],
+            this.y - v[1],
+            this.z - v[2],
+        );
     }
 }
 
@@ -518,43 +510,34 @@ class Mat3 {
 
     constructor(...m) {
         this.#matrix = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-        this.add(m);
+        this.set(...m);
     }
 
     /**
-     * Set this matrix to its sum with another matrix
+     * Calculate the sum of this matrix and another matrix
      * @param {Iterable<number>} m
-     * @return {this} Returns itself
+     * @return {Mat3} Sum matrix
      */
     add(m) {
         m = [...m];
-        this[0][0] += m[0];
-        this[0][1] += m[1];
-        this[0][2] += m[2];
-        this[1][0] += m[3];
-        this[1][1] += m[4];
-        this[1][2] += m[5];
-        this[2][0] += m[6];
-        this[2][1] += m[7];
-        this[2][2] += m[8];
-        return this;
-    }
-
-    /**
-     * Clone this matrix
-     * @return {Mat3} Returns a copy of this matrix
-     */
-    clone() {
-        return new Mat3(...this);
+        return new Mat3(
+            this[0][0] + m[0],
+            this[0][1] + m[1],
+            this[0][2] + m[2],
+            this[1][0] + m[3],
+            this[1][1] + m[4],
+            this[1][2] + m[5],
+            this[2][0] + m[6],
+            this[2][1] + m[7],
+            this[2][2] + m[8],
+        );
     }
 
     /**
      * Perform matrix multiplication
      * 
      * @param {Iterable<number>} m - Matrix or column vector
-     * @return {this} Return itself
-     * @overload
-     * @return {Vec3} Output column vector
+     * @return {Mat3|Vec3} Product of matrix multiplication
      */
     mul(m) {
         m = [...m];
@@ -577,7 +560,8 @@ class Mat3 {
                 )
             );
         }
-        this.#matrix = [
+
+        return new Mat3(
             (
                 (this.#matrix[0]*m[0] || 0) +
                 (this.#matrix[1]*m[3] || 0) +
@@ -625,27 +609,41 @@ class Mat3 {
                 (this.#matrix[7]*m[5] || 0) +
                 (this.#matrix[8]*m[8] || 0)
             ),
-        ]
+        );
+    }
+
+    /**
+     * Set this vector's X and Y value
+     * @param {Iterable<number>|...number} m
+     * @return {this} Returns itself
+     */
+    set(...m) {
+        if (m[0] && m[0][Symbol.iterator]) { m = [...m[0]]; }
+        for (let i = 0; i < 9; ++i) {
+            const value = +m[i];
+            if (!(isNaN(value))) { this.#matrix[i] = value; }
+        }
         return this;
     }
 
     /**
-     * Set this matrix to its difference with another matrix
+     * Calculate the difference between this matrix another matrix
      * @param {Iterable<number>} m
-     * @return {this} Returns itself
+     * @return {Mat3} Difference matrix
      */
     sub(m) {
         m = [...m];
-        this[0][0] -= m[0];
-        this[0][1] -= m[1];
-        this[0][2] -= m[2];
-        this[1][0] -= m[3];
-        this[1][1] -= m[4];
-        this[1][2] -= m[5];
-        this[2][0] -= m[6];
-        this[2][1] -= m[7];
-        this[2][2] -= m[8];
-        return this;
+        return new Mat3(
+            this[0][0] - m[0],
+            this[0][1] - m[1],
+            this[0][2] - m[2],
+            this[1][0] - m[3],
+            this[1][1] - m[4],
+            this[1][2] - m[5],
+            this[2][0] - m[6],
+            this[2][1] - m[7],
+            this[2][2] - m[8],
+        );
     }
 }
 
