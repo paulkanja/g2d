@@ -1,13 +1,13 @@
 import math from "./math.js";
 
 /**
- * Input manager class
+ * Poll-based input manager
  * @param {HTMLElement} element - HTML element to observe
  */
 class InputManager {
     #element;
-    #keys;
-    #inputframe = 0.04;
+    #inputs;
+    #unpolled;
 
     constructor(element) {
         if (!(element instanceof HTMLElement)) {
@@ -17,28 +17,26 @@ class InputManager {
             );
         }
         this.#element = element;
-        this.#keys = {};
+        this.#inputs = {};
+        this.#unpolled = {};
         element.addEventListener("keydown", e => {
             e.preventDefault();
             if (e.repeat) { return; }
             const key = this.#keyof(e.key.toUpperCase());
             if (!key) { return; }
-            const now = Date.now();
-            this.#keys[key] = {event: "keydown", time: now};
+            this.#unpolled[`KEY:${key}`] = {
+                event: "keydown",
+                time: Date.now(),
+            };
         });
         element.addEventListener("keyup", e => {
             e.preventDefault();
             if (e.repeat) { return; }
             const key = this.#keyof(e.key.toUpperCase());
             if (!key) { return; }
-            const now = Date.now();
-            const d = (this.#keys[key]?.event === "keydown") ?
-                now - this.#keys[key].time :
-                null;
-            this.#keys[key] = {
+            this.#unpolled[`KEY:${key}`] = {
                 event: "keyup",
-                time: now,
-                durationHeld: d
+                time: Date.now(),
             };
         });
     }
@@ -53,71 +51,38 @@ class InputManager {
      */
     axial(up, down, left, right) {
         const v = new math.Vec2(0, 0);
-        if (this.keyheld(up)) { v.y = -1; }
-        if (this.keyheld(down)) { v.y += 1; }
-        if (this.keyheld(left)) { v.x = -1; }
-        if (this.keyheld(right)) { v.x += 1; }
+        if (this.keydown(up)) { v.y = -1; }
+        if (this.keydown(down)) { v.y += 1; }
+        if (this.keydown(left)) { v.x = -1; }
+        if (this.keydown(right)) { v.x += 1; }
         return v.norm();
     }
 
     /**
-     * Check if a key has just been pressed down
-     * @param {string} key
-     * @return {boolean} True if the key has been pressed down
+     * Remove all polled and unpolled inputs
+     * @return {void}
      */
-    keydown(key) {
-        if (this.#keys[key]?.event === "keydown" && !this.#keys[key].read) {
-            this.#keys[key].read = true;
-            return Date.now() - this.#keys[key].time <= this.#inputframe;
-        }
+    clear() {
+        this.#inputs   = {};
+        this.#unpolled = {};
     }
 
     /**
-     * Check if a key has just been released
+     * Check if a key is currently pressed down
+     * @param {string} key
+     * @return {boolean} True if the key is pressed down
+     */
+    keydown(key) {
+        return this.#inputs[`KEY:${key}`]?.event === "keydown";
+    }
+
+    /**
+     * Check if a key was released
      * @param {string} key
      * @return {boolean} True if the key has been released
      */
     keyup(key) {
-        if (this.#keys[key]?.event === "keyup" && !this.#keys[key].read) {
-            this.#keys[key].read = true;
-            return Date.now() - this.#keys[key].time <= this.#inputframe;
-        }
-    }
-
-    // FIXME: Make keypressed more consistent
-    /**
-     * Check if a key has just released after being pressed for at most a
-     * duration of time
-     * @param {string} key
-     * @param {number} [duration=0.2]
-     * @return {boolean} True if the key has been released after being pressed
-     *                   for at most the given duration
-     */
-    keypressed(key, duration = 0.2) {
-        if (isNaN(duration) || duration <= 0) { return false; }
-        if (this.#keys[key]?.event === "keyup" && !this.#keys[key].read) {
-            if (
-                !this.#keys[key].durationHeld ||
-                this.#keys[key].durationHeld > duration
-            ) { return false; }
-            this.#keys[key].read = true;
-            return Date.now() - this.#keys[key].time <= this.#inputframe;
-        }
-    }
-
-    /**
-     * Check if a key is currently pressed and has been pressed for at least a
-     * duration of time
-     * @param {string} key
-     * @param {number} [duration=0]
-     * @return {boolean} True if the key is currently pressed and has been
-     *                   pressed for at least the given duration
-     */
-    keyheld(key, duration = 0) {
-        if (isNaN(duration) || duration < 0) { return false; }
-        if (this.#keys[key]?.event === "keydown") {
-            return Date.now() - this.#keys[key].time >= duration;
-        }
+        return this.#inputs[`KEY:${key}`]?.event === "keyup";
     }
 
     #keyof(key) {
@@ -152,6 +117,21 @@ class InputManager {
         case "ROMANCHARACTER":
             return "ROMAJI";
         }
+    }
+
+    /**
+     * Clear polled inputs and poll new inputs
+     * @return {void}
+     */
+    poll(maxAge = Infinity) {
+        const now = Date.now();
+        this.#inputs = {};
+        for (const key in this.#unpolled) {
+            if (now - this.#unpolled[key].time < maxAge) {
+                this.#inputs[key] = this.#unpolled[key];
+            }
+        }
+        this.#unpolled = {};
     }
 }
 
